@@ -1,0 +1,21 @@
+.page-navigator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  a {
+    border-radius: 9px;
+    border: 1px solid transparent;
+    padding: 9px 18px;
+    font-size: 14px;
+    color: black;
+    transition: .24s;
+    background-color: white;
+    &:hover {
+      border: 1px solid rgba($color_primary, 0.4);
+    }
+    &.router-link-active {
+      border: 1px solid rgba($color_primary, 0.4);
+      color: $color_primary;
+    }
+  }
+}

@@ -1,0 +1,105 @@
+@keyframes table-column-actions {
+  0%   { opacity: 0; right: 90%; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; right: 100%; }
+}
+
+.table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  tr {
+    th {
+      color: $color_primary;
+      font-weight: 500;
+    }
+    th, td {
+      white-space: nowrap;
+      padding: 4px 12px;
+      .elements {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      &.elipsis {
+        text-overflow: ellipsis;
+        max-width: 196px;
+        overflow: hidden;
+      }
+      &:has(.actions) {
+        position: relative;
+        .actions {
+          position: absolute;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          background-color: white;
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 9px;
+          top: 50%;
+          transform: translateY(-50%);
+          animation: 0.2s ease-in-out forwards table-column-actions;
+          z-index: 1;
+          .button {
+            svg {
+              width: 18px;
+              height: 18px;
+              &.edit {
+                fill: $color_orange;
+              }
+              &.destroy {
+                fill: $color_red;
+              }
+            }
+            &:hover {
+              position: relative;
+              &::before {
+                content: ' ';
+                background-color: blue;
+                position: absolute;
+                z-index: -1;
+                width: calc(100% + 9px);
+                height: calc(100% + 9px);
+                border-radius: 100%;
+              }
+              &:has(.edit) {
+                &::before {
+                  background-color: rgba($color_orange, 0.12);
+                }
+              }
+              &:has(.destroy) {
+                &::before {
+                  background-color: rgba($color_red, 0.12);
+                }
+              }
+            }
+          }
+        }
+        &:hover {
+          .actions {
+            display: flex;
+          }
+        }
+      }
+      &:has(.popup-menu) {
+        overflow: visible;
+      }
+      &.ellipsis {
+        max-width: 196px;
+        text-overflow: ellipsis;
+        overflow: hidden;  
+      }
+    }
+    &:nth-child(n+2) {
+      border-top: 1px solid #eee;
+    }
+  }
+  thead {
+    border-bottom: 1px solid #eee;
+  }
+  tfoot {
+    border-top: 1px solid #eee;
+  }
+}

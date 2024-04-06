@@ -1,0 +1,67 @@
+.tiles {
+  display: grid;
+  gap: 15px;
+}
+
+.tile {
+  padding: 18px;
+  align-items: center;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid rgba($color_primary, 0.32);
+  position: relative;
+  > .status {
+    position: absolute;
+    top: 0;
+    left: 24px;
+    transform: translate(0, -50%);
+    background-color: white;
+    text-transform: uppercase;
+    padding: 0 18px;
+    letter-spacing: 0.3px;
+    width: max-content;
+    color: $color_primary;
+  }
+  > header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    .leading {
+      display: grid;
+      place-items: center;
+      svg {
+        width: 36px;
+        height: 36px;
+        fill: $color_primary;
+      }
+    }
+    .content {
+      display: grid;
+      h3 {
+        font-weight: bold;
+        font-size: 17px;
+        color: black;
+      }
+      p {
+        color: grey;
+      }
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+  footer {
+    margin-top: 12px;
+    ul {
+      display: grid;
+      gap: 2px;
+      li {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+}

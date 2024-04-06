@@ -1,0 +1,59 @@
+user_course
+  - course
+  - user
+  - pivot
+
+course_attendance
+  - course
+  - attendance
+  - pivot
+
+user_attendance
+  - user
+  - attendance
+  - pivot
+
+grade
+  - course
+    - id
+    - name
+  - users
+
+student_grade_aggregates
+  - grade_id
+  - student_id
+  - category_id
+  - course_id
+  - score
+
+task
+  - id
+  - name
+  - description
+  - instructions
+  - points
+  - contains [user_id]
+
+question
+  - id
+  - question
+  - description
+  - options
+
+user_task
+  - user_id
+  - task_id
+  - pivot
+    - password
+    - points
+    - start_at
+    - end_at
+    - get_score
+
+user_question
+  - user_id
+  - question_id
+  - pivot
+    - option_id
+    - response
+    - score

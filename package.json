@@ -1,0 +1,25 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
+    "nuxt": "^3.8.2",
+    "sass": "^1.69.6",
+    "vue": "^3.4.3",
+    "vue-router": "^4.2.5"
+  },
+  "dependencies": {
+    "firebase": "^10.7.2",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
+    "nanoid": "^5.0.6"
+  }
+}

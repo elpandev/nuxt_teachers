@@ -1,0 +1,76 @@
+.button {
+  display: grid;
+  font-size: 14px;
+  &.icon {
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    svg {
+      fill: black;
+      width: 21px;
+      height: 21px;
+    }
+  }
+  &.medium {
+    width: 40px;
+    height: 40px;
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  &.text {
+    text-align: center;
+    color: black;
+    padding: 9px 24px;
+  }
+  &.solid, &.outline {
+    background-color: rgba($color_primary, 0.24);
+    border-radius: 6px;
+  }
+  &.red {
+    color: red;
+    svg {
+      fill: red;
+    }
+    &.outline {
+      background-color: rgb(255, 215, 210);
+    }
+  }
+  &.teal {
+    color: $color_primary;
+    svg {
+      fill: $color_primary;
+    }
+    &.outline {
+      background-color: rgba($color_primary, 0.12);
+    }
+  }
+  &.orange {
+    color: orange;
+    svg {
+      fill: orange;
+    }
+    &.outline {
+      background-color: rgb(255, 240, 190);
+    }
+  }
+  &.solid, &.router-link-active {
+    color: white;
+    svg {
+      fill: white;
+    }
+    &.red {
+      background-color: red;
+    }
+    &.orange {
+      background-color: orange;
+    }
+    &.teal {
+      background-color: rgb(50, 175, 175);
+    }
+  }
+  &.disabled {
+    opacity: 0.4;
+  }
+}

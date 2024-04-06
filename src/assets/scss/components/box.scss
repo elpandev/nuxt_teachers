@@ -1,0 +1,9 @@
+.box {
+  background-color: white;
+  &.rounded {
+    border-radius: 6px;
+  }
+  &.grey {
+    background-color: #f4f4f4;
+  }
+}
