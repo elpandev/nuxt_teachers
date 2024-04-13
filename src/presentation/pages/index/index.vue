@@ -16,6 +16,8 @@ const student_tasks = new StudentTaskFactory()
 
 const attendances = new AttendanceFactory()
   .generate_multiple({ length: 4 })
+
+
 </script>
 
 <template>
@@ -40,42 +42,38 @@ const attendances = new AttendanceFactory()
       </li>
     </ul>
 
-    <section>
-      <h3>Próximos eventos</h3>
+    <section style="display: grid; gap: 12px;">
+      <h3>Próximos Eventos</h3>
 
-      <ol>
-        <li v-for="item in 3" :key="item">
-          <span>{{ new Date().toString() }}</span>
+      <ul class="events">
+        <li class="container" v-for="item in 3" :key="item">
+          <span><v-icon-schedule />{{ new Date().format(`YYYY-MM-DD hh:mm`) }}</span>
           <span>Teatro de Roma</span>
-          <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil vitae corrupti, temporibus inventore et ut nobis voluptas, id mollitia beatae recusandae deserunt. Eius, dolor.</span>
-          
+          <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga blanditiis repudiandae nihil?</span>
         </li>
-      </ol>
+      </ul>
     </section>
 
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-      <section class="container" style="display: grid; gap: 12px; padding: 18px 21px; align-content: start;">
-        <header>
-          <h3>Últimos examenes</h3>
-        </header>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 21px;">
+      <section style="display: grid; gap: 12px; align-content: start;">
+        <h3>Últimos Exámenes</h3>
 
-        <ul class="student-tasks">
+        <ul class="container student-tasks">
           <li v-for="student_task in student_tasks" :key="student_task.id">
             <span>{{ student_task.task.name }}</span>
+            <span>{{ student_task.start_at ? new Date(student_task.start_at).format('YYYY-MM-DD') : '' }}</span>
             <span>{{ student_task.student.name }}</span>
             <span>{{ student_task.points }}</span>
           </li>
         </ul>
       </section>
 
-      <section class="container" style="display: grid; gap: 12px; padding: 18px 21px; align-content: start;">
-        <header>
-          <h3>Últimas hojas de asistencia</h3>
-        </header>
+      <section style="display: grid; gap: 12px; align-content: start;">
+        <h3>Últimas Asistencias</h3>
 
-        <ul class="attendances">
+        <ul class="container attendances">
           <li v-for="attendance in attendances" :key="attendance.id">
-            <span>{{ new Date(attendance.date_at).toLocaleDateString() }}</span>
+            <span>{{ new Date(attendance.date_at).format('YYYY/MM/DD') }}</span>
             <span>{{ attendance.name }}</span>
             <v-message :is="'span'">
               <template #element>78%</template>
@@ -85,12 +83,6 @@ const attendances = new AttendanceFactory()
         </ul>
       </section>
     </div>
-
-    <section class="container">
-      <header>
-        <h3>Últimos exámenes resueltos</h3>
-      </header>
-    </section>
   </main>
 </template>
 
@@ -106,14 +98,31 @@ const attendances = new AttendanceFactory()
 .student-tasks {
   display: grid;
   gap: 9px;
+  padding: 18px 21px !important;
   li {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
+    gap: 3px 12px;
     span {
-      &:first-of-type {
+      &:nth-of-type(1) {
         font-size: 13px;
         color: #aaa;
         grid-column: 1/3;
+      }
+      &:nth-of-type(2) {
+        display: grid;
+        font-size: 13px;
+        color: #aaa;
+      }
+      &:nth-of-type(4) {
+        display: grid;
+        place-items: center;
+        border-radius: 4px;
+        grid-column: 3;
+        width: fit-content;
+        justify-self: right;
+        font-size: 14px;
+        line-height: 1.5;
       }
     }
   }
@@ -121,10 +130,51 @@ const attendances = new AttendanceFactory()
 .attendances {
   display: grid;
   gap: 9px;
+  padding: 18px 21px !important;
   li {
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: 12px;
+    align-items: center;
+    span {
+      &:nth-of-type(1) {
+        font-size: 14px;
+        color: #aaa;
+      }
+    }
+  }
+}
+.events {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  > li {
+    display: grid;
+    gap: 4px;
+    padding: 18px 21px;
+    span {
+      &:nth-of-type(1) {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px;
+        align-items: center;
+        color: #aaa;
+        font-size: 13px;
+        line-height: 1;
+        svg {
+          width: 15px;
+          height: 15px;
+          fill: #aaa;
+        }
+      }
+      &:nth-of-type(2) {
+        font-weight: 500;
+      }
+      &:nth-of-type(3) {
+        font-size: 14px;
+        color: #aaa;
+      }
+    }
   }
 }
 </style>
