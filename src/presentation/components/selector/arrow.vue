@@ -1,8 +1,8 @@
 <template>
   <div class="v-selector-arrow">
-    <button><v-icon-navigate-before @click="prev()" /></button>
+    <button :class="{ enabled: prev_enabled }"><v-icon-navigate-before @click="prev()" /></button>
     <span>{{ option.name }}</span>
-    <button><v-icon-navigate-next @click="next()"/></button>
+    <button :class="{ enabled: next_enabled }"><v-icon-navigate-next @click="next()"/></button>
   </div>
 </template>
 
@@ -10,30 +10,38 @@
 import { SelectOption } from '../../models/select_option';
 
 const props = defineProps<{
-  initial: SelectOption<T>
   options: SelectOption<T>[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'change', value: T): void
-}>()
+const option = defineModel<SelectOption<T>>({ required: true })
 
-const option = ref<SelectOption<T>>(props.initial)
-const index  = ref<number>(props.options.findIndex(option => option.value == props.initial.value))
+const prev_enabled = computed<boolean>(() => {
+  const index = props.options.findIndex(e => e.id == option.value.id)
+
+  return (index - 1) >= 0
+})
+
+const next_enabled = computed<boolean>(() => {
+  const index = props.options.findIndex(e => e.id == option.value.id)
+
+  return (index + 1) < props.options.length - 1
+})
 
 function prev() {
-  if (index.value > 0) index.value--
+  if (prev_enabled.value) {
+    const index = props.options.findIndex(e => e.id == option.value.id)
+
+    option.value = props.options[index - 1]
+  }
 }
 
 function next() {
-  if (index.value < props.options.length - 1) index.value++
+  if (next_enabled.value) {
+    const index = props.options.findIndex(e => e.id == option.value.id)
+  
+    option.value = props.options[index + 1]
+  }
 }
-
-watch(index, (value) => {
-  option.value = props.options[value] as any
-
-  emit('change', option.value.value as T)
-})
 </script>
 
 <style lang="scss">
@@ -48,6 +56,12 @@ watch(index, (value) => {
   }
   span {
     text-align: center;
+  }
+  button {
+    opacity: 0.2;
+    &.enabled {
+      opacity: 1;
+    }
   }
 }
 </style>

@@ -26,11 +26,11 @@ export function event_type_locale(type: EventTypeEnum): string {
 export const event_type_options: ISelectOption[] = Object.values(EventTypeEnum)
   .map(value => ({ key: value, name: event_type_locale(value), value }))
 
-export class Event extends BaseModel<IEvent> implements IEvent {
+export class Event extends BaseModel<IEvent> {
   public type: EventTypeEnum = EventTypeEnum.ATTENDANCE;
   public name:        string = '';
   public description: string = '';
-  public date_at:     number = Date.now();
+  public date_at:     Date   = new Date;
 
   constructor(data?: Partial<IEvent>) {
     super()
@@ -58,7 +58,7 @@ export class Event extends BaseModel<IEvent> implements IEvent {
       if (data.type)        this.type        = data.type
       if (data.name)        this.name        = data.name
       if (data.description) this.description = data.description
-      if (data.date_at)     this.date_at     = data.date_at
+      if (data.date_at)     this.date_at     = new Date(data.date_at)
     }
 
     return this
@@ -71,7 +71,7 @@ export class Event extends BaseModel<IEvent> implements IEvent {
     payload.type        = this.type
     payload.name        = this.name
     payload.description = this.description
-    payload.date_at     = this.date_at
+    payload.date_at     = this.date_at.getTime()
 
     return payload
   }

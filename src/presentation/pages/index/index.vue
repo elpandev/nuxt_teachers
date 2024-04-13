@@ -1,25 +1,3 @@
-<script setup lang="ts">
-import { AttendanceFactory } from '~/src/modules/attendance/domain/factory';
-import { AttendanceRegister } from '~/src/modules/attendance/domain/values/register';
-import { StudentFactory } from '~/src/modules/student/domain/factory';
-import { StudentTaskFactory } from '~/src/modules/student_task/domain/factory';
-import { TaskFactory } from '~/src/modules/task/domain/factory';
-
-const student_tasks = new StudentTaskFactory()
-  .generate_multiple({ length: 4 })
-  .map(student_task => {
-    student_task.student = new StudentFactory().generate()
-    student_task.task = new TaskFactory().generate()
-
-    return student_task
-  })
-
-const attendances = new AttendanceFactory()
-  .generate_multiple({ length: 4 })
-
-
-</script>
-
 <template>
   <v-custom-header-primary :name="`Inicio`" />
 
@@ -46,10 +24,8 @@ const attendances = new AttendanceFactory()
       <h3>Próximos Eventos</h3>
 
       <ul class="events">
-        <li class="container" v-for="item in 3" :key="item">
-          <span><v-icon-schedule />{{ new Date().format(`YYYY-MM-DD hh:mm`) }}</span>
-          <span>Teatro de Roma</span>
-          <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga blanditiis repudiandae nihil?</span>
+        <li class="container" v-for="event in new EventFactory().generate_multiple({ length: 3 })" :key="event.id">
+          <v-event :event="event" />
         </li>
       </ul>
     </section>
@@ -85,6 +61,29 @@ const attendances = new AttendanceFactory()
     </div>
   </main>
 </template>
+
+<script setup lang="ts">
+import { AttendanceFactory } from '~/src/modules/attendance/domain/factory';
+import { AttendanceRegister } from '~/src/modules/attendance/domain/values/register';
+import { EventFactory } from '~/src/modules/event/domain/factory';
+import { StudentFactory } from '~/src/modules/student/domain/factory';
+import { StudentTaskFactory } from '~/src/modules/student_task/domain/factory';
+import { TaskFactory } from '~/src/modules/task/domain/factory';
+
+const student_tasks = new StudentTaskFactory()
+  .generate_multiple({ length: 4 })
+  .map(student_task => {
+    student_task.student = new StudentFactory().generate()
+    student_task.task = new TaskFactory().generate()
+
+    return student_task
+  })
+
+const attendances = new AttendanceFactory()
+  .generate_multiple({ length: 4 })
+
+
+</script>
 
 <style lang="scss">
 .counters {
@@ -148,33 +147,8 @@ const attendances = new AttendanceFactory()
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  > li {
-    display: grid;
-    gap: 4px;
-    padding: 18px 21px;
-    span {
-      &:nth-of-type(1) {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 6px;
-        align-items: center;
-        color: #aaa;
-        font-size: 13px;
-        line-height: 1;
-        svg {
-          width: 15px;
-          height: 15px;
-          fill: #aaa;
-        }
-      }
-      &:nth-of-type(2) {
-        font-weight: 500;
-      }
-      &:nth-of-type(3) {
-        font-size: 14px;
-        color: #aaa;
-      }
-    }
+  li {
+    padding: 0;
   }
 }
 </style>
