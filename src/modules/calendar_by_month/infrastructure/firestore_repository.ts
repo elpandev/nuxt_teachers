@@ -9,7 +9,7 @@ import { auth } from "~/src/presentation/states/auth";
 export class FirestoreCalendarByMonthRepository extends BaseFirestoreModelRepository<CalendarByMonth, ICalendarByMonth> implements ICalendarByMonthRepository {
   public db = firestore
 
-  public reference() { return `/${TableEnum.USERS}/${auth.user.id}/${TableEnum.CALENDAR_BY_MONTH}` }
+  public reference() { return `/${TableEnum.USERS}/${auth.user.id}/${TableEnum.CALENDAR_BY_MONTHS}` }
 
   public fromFirestore(doc: DocumentSnapshot<DocumentData, DocumentData>): CalendarByMonth {
     const model = new CalendarByMonth({ id: doc.id, ...doc.data() })

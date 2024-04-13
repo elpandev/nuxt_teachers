@@ -5,7 +5,7 @@
     </template>
   </v-custom-header-primary>
 
-  <main v-if="!pending" class="x-events">
+  <main class="x-events">
     <header class="container">
       <v-selector-arrow class="horizontal" v-model="option" :options="options" />
     </header>
@@ -18,12 +18,10 @@
       :event="event"
     />
   </main>
-
-  <v-loader v-else />
 </template>
 
 <script setup lang="ts">
-import { event_request } from '~/src/config/repositories';
+import { calentar_by_month_request, event_request } from '~/src/config/repositories';
 import { CalendarByMonthFactory } from '~/src/modules/calendar_by_month/domain/factory';
 import { CalendarByMonth } from '~/src/modules/calendar_by_month/domain/model';
 import type { Event } from '~/src/modules/event/domain/model';
@@ -35,19 +33,10 @@ const events            = ref<Event[]>([])
 const date              = ref<Date>(new Date())
 const calendar_by_month = ref<CalendarByMonth>(new CalendarByMonth())
 
-const { data, pending } = await useLazyAsyncData(async () => {
-  const [events, count] = await Promise.all([
-    event_request.paginate(),
-    event_request.count(),
-  ])
-
-  return { events, count }
-})
-
 function generate_option_by_date(_date: Date): SelectOption<Date> {
   return new SelectOption({
     id:    _date.format('YYYY-MM'),
-    name:  _date.toDateString(),
+    name:  _date.toLocaleDateString('es-EC', { month: 'long', year: 'numeric' }),
     value: new Date(_date),
   })
 }
@@ -67,7 +56,16 @@ function generate_options(_date: Date): SelectOption<Date>[] {
 }
 
 async function request_calendar_by_month(id: string) {
-  return new CalendarByMonthFactory().generate().fromPayload({ id })
+  return await calentar_by_month_request.get(id) ?? new CalendarByMonth({ id })
+}
+
+function watch_date(value: Date) {
+  const record        = calendar_by_month.value.events.get(value.format('YYYY-MM-DD'))
+  const record_events = record ? Array.from(record.values()) : []
+
+  record_events.sort((a, b) => a.date_at.toISOString().localeCompare(b.date_at.toISOString()))
+
+  events.value = record_events
 }
 
 watch(option, async (value) => {
@@ -75,12 +73,12 @@ watch(option, async (value) => {
   calendar_by_month.value = await request_calendar_by_month(value.value.format('YYYY-MM'))
 })
 
-watch(date, async (value) => {
-  const record = calendar_by_month.value.events.get(value.format('YYYY-MM-DD'))
+watch(date, watch_date)
 
-  events.value = record
-    ? Array.from(record.values())
-    : []
+onMounted(async () => {
+  calendar_by_month.value = await request_calendar_by_month(date.value.format('YYYY-MM'))
+
+  watch_date(date.value)
 })
 </script>
 

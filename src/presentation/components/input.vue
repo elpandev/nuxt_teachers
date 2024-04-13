@@ -5,45 +5,47 @@
     label?: string
     type?: 'text'|'number'|'datetime-local'
     step?: number
-    modelValue: any
     errors?: string[]
-    prefix?: string
     placeholder?: string
     textarea?: boolean
   }
 
-  interface Emits {
-    (e: 'update:modelValue', value: any): any
-  }
-
   const id    = nano_id()
   const props = withDefaults(defineProps<Props>(), { type: 'text' })
-  const emit  = defineEmits<Emits>()
+  const model = defineModel({ required: true })
 
-  function on_input(event: any) {
-    let value = event.target.value as string
+  const value = computed<string>({
+    get() {
+      if (typeof model.value == 'number') return `${model.value}`
+      if (model.value instanceof Date)    return model.value.toInput()
 
-    if (props.prefix) {
-      value = `${props.prefix}${value.replace(props.prefix, '')}`
+      return model.value as string
+    },
+    set(value: string) {
+      if (props.type == 'text')           model.value = value
+      if (props.type == 'number')         model.value = parseFloat(`${value}`)
+      if (props.type == 'datetime-local') model.value = new Date(value)
     }
-
-    return emit('update:modelValue', value)
-  }
+  })
 </script>
 
 <template>
   <div class="input">
     <label v-if="label" :for="id">{{ label }}</label>
 
-    <textarea
-      v-if="textarea"
+    <textarea v-if="textarea"
+      v-model="value"
       :id="id"
-      :value="modelValue"
-      @input="on_input"
       :placeholder="placeholder"
     ></textarea>
 
-    <input v-else :id="id" :type="type" :value="modelValue" @input="on_input" :step="step" :placeholder="placeholder">
+    <input v-else
+      v-model="value"
+      :id="id"
+      :type="type"
+      :step="step"
+      :placeholder="placeholder"
+    >
 
     <v-errors :errors="errors" />
   </div>

@@ -49,7 +49,7 @@ useSeoMeta({ title })
         <v-input v-model="data.event.name"        :label="'Nombre'" />
         <v-input v-model="data.event.description" :label="'Descripción'" />
 
-        <v-form-input-date-time v-model="data.event.date_at" :label="'Fecha'" />
+        <v-input v-model="data.event.date_at" :type="'datetime-local'" :label="'Fecha'" />
 
         <v-loader v-if="store.pending.value" />
         <button v-else class="button outline text teal" type="submit">Guardar</button>

@@ -3,12 +3,12 @@
 
   interface Props {
     label: string
-    modelValue: number
+    modelValue: Date
     errors?: string[]
   }
 
   interface Emits {
-    (e: 'update:modelValue', value: number): any
+    (e: 'update:modelValue', value: Date): any
   }
 
   const id    = nano_id()
@@ -18,7 +18,7 @@
   function on_input(event: any) {
     const value = event.target.value as string
 
-    emit('update:modelValue', new Date(value).getTime())
+    emit('update:modelValue', new Date(value))
   }
 </script>
 
