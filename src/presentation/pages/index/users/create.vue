@@ -4,7 +4,6 @@
   import { UserFactory } from '~/src/modules/user/domain/factory';
   import { user_request } from '~/src/config/repositories';
   import { useSnackbar } from '~/src/presentation/states/snackbar';
-  import { role_options } from '~/src/modules/user/domain/model';
 
   const props     = defineProps<{ user_id?: string }>()
   const title     = `${ props.user_id ? 'Editar' : 'Nuevo' } Usuario`

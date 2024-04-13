@@ -7,6 +7,7 @@ export const enum TableEnum {
   ATTENDANCES      = 'attendances',
   GRADES           = 'grades',
   CATEGORIES       = 'categories',
+  EVENTS           = 'events',
   STUDENT_TASK     = 'student_tasks',
   STUDENT_QUESTION = 'student_questions',
   GRADE_REGISTER_AGGREGATES = 'grade_register_aggregates',

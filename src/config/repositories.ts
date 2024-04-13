@@ -26,6 +26,8 @@ import { FirestoreStudentTaskRepository } from "../modules/student_task/infrastr
 import { StudentTaskRequestRepository } from "../modules/student_task/aplication/request_repository";
 import { FirestoreStudentQuestionRepository } from "../modules/student_question/infrastructure/firestore_repository";
 import { StudentQuestionRequestRepository } from "../modules/student_question/aplication/request_repository";
+import { FirestoreEventRepository } from "../modules/event/infrastructure/firestore_repository";
+import { EventRequestRepository } from "../modules/event/aplication/request_repository";
 
 export const auth_repository             = new FirestoreAuthRepository()
 export const user_repository             = new FirestoreUserRepository()
@@ -38,6 +40,7 @@ export const grade_repository            = new FirestoreGradeRepository()
 export const task_repository             = new FirestoreTaskRepository()
 export const question_repository         = new FirestoreQuestionRepository()
 export const schedule_repository         = new FirestoreScheduleRepository()
+export const event_repository            = new FirestoreEventRepository()
 export const student_task_repository     = new FirestoreStudentTaskRepository()
 export const student_question_repository = new FirestoreStudentQuestionRepository()
 
@@ -52,6 +55,7 @@ export const grade_request            = new GradeRequestRepository(grade_reposit
 export const task_request             = new TaskRequestRepository(task_repository)
 export const question_request         = new QuestionRequestRepository(question_repository)
 export const schedule_request         = new ScheduleRequestRepository(schedule_repository)
+export const event_request            = new EventRequestRepository(event_repository)
 export const student_task_request     = new StudentTaskRequestRepository(student_task_repository)
 export const student_question_request = new StudentQuestionRequestRepository(student_question_repository)
 
