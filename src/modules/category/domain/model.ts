@@ -1,6 +1,7 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
+import { SelectOption } from "~/src/presentation/models/select_option";
 
 export enum CategoryTypeEnum {
   ATTENDANCE = 'ATTENDANCE',
@@ -86,10 +87,11 @@ export class Category extends BaseModel<ICategory> implements ICategory {
     }
   }
 
-  public toSelectOption(): ISelectOption<Category> {
-    return {
+  public toSelectOption(): SelectOption<Category> {
+    return new SelectOption({
+      id:    this.id,
       name:  this.name,
       value: this,
-    }
+    })
   }
 }

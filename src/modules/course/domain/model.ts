@@ -92,6 +92,7 @@ export class Course extends BaseModel<ICourse> implements ICourse {
 
   public toSelectOption(): SelectOption<Course> {
     return new SelectOption({
+      id:    this.id,
       name:  this.name,
       value: this,
     })

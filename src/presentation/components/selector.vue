@@ -12,14 +12,14 @@
     restart?: () => void
   }
 
-  const model = defineModel<SelectOption>()
+  const model = defineModel<SelectOption<T>>({ required: true })
   const props = defineProps<Props>()
 
-  const id              = nano_id()
-  const input           = ref<HTMLInputElement>()
-  const options         = ref<SelectOption[]>(props.options ?? [])
-  const query           = ref<string>(model.value?.name ?? '')
-  const options_enabled = ref<boolean>(false)
+  const id      = nano_id()
+  const input   = ref<HTMLInputElement>()
+  const options = ref<SelectOption[]>(props.options ?? [])
+  const query   = ref<string>(model.value?.name ?? '')
+  const enabled = ref<boolean>(false)
 
   async function request_options() {
     options.value = props.options ?? await props.request?.(query.value) ?? []
@@ -28,8 +28,8 @@
   function select(option: SelectOption) {
     query.value = option.name
 
-    options_enabled.value = false
-    model.value = option
+    enabled.value = false
+    model  .value = option
   }
 
   function on_input_focus() {
@@ -45,29 +45,30 @@
       const option = options.value.find(e => e.name === query.value)
 
       if (option) {
-        options_enabled.value = false
-        model.value = option
-
-        query.value = option.name
+        enabled.value = false
+        model  .value = option
+        query  .value = option.name
       }
     }, 1000, id)
   }
 
   async function on_input_click() {
-    options_enabled.value = true
+    enabled.value = true
 
     if (options.value.isEmpty()) {
       await request_options()
     }
   }
+
+  watch(model, (value) => query.value = value.name)
 </script>
 
 <template>
-  <div class="v-selector" v-click-outside="() => options_enabled = false">
+  <div class="v-selector" v-click-outside="() => enabled = false">
     <label v-if="label" :for="id">{{ label }}</label>
 
     <div class="body">
-      <input ref="input" :id="id" :value="query" :placeholder="props.placeholder" @input="on_input_query" @click="on_input_click" @focus="on_input_focus">
+      <input ref="input" :id="id" v-model="query" :placeholder="props.placeholder" @input="on_input_query" @click="on_input_click" @focus="on_input_focus">
       <button v-if="props.restart" class="restart" type="button">
         <v-icon-close v-if="query.isNotEmpty()" @click="props.restart?.()" />
       </button>
@@ -76,10 +77,12 @@
     <v-errors :errors="props.errors" />
 
     <div class="options-container">
-      <ul v-if="options_enabled">
-        <li v-for="(option, i) in options" :key="`option${i}${id}`" @click="select(option)">
-          {{ option.name }}
-        </li>
+      <ul v-if="enabled">
+        <template v-for="(option, i) in options" :key="`option-${i}-${id}`">
+          <li v-if="option.value !== undefined" @click="select(option)">
+            {{ option.name }}
+          </li>
+        </template>
       </ul>
     </div>
   </div>

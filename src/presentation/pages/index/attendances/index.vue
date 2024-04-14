@@ -4,12 +4,12 @@ import { AttendanceFilter } from '~/src/modules/attendance/domain/filter';
 import type { Student } from '~/src/modules/student/domain/model';
 import { Course } from '~/src/modules/course/domain/model';
 import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
-import type { ISelectOption } from '~/src/presentation/interfaces/select_option';
 import { CategoryFilter } from '~/src/modules/category/domain/filter';
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { CourseFilter } from '~/src/modules/course/domain/filter';
 import { AttendanceRegisterStatusEnum, attendance_register_status_locale } from '~/src/modules/attendance/domain/values/register';
+import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
 
 const snackbar          = useSnackbar()
 const name_selected     = ref<string>('')
@@ -29,6 +29,30 @@ const late_average     = ref<number>(0)
 const absent_average   = ref<number>(0)
 const expelled_average = ref<number>(0)
 
+const course_option = computed<SelectOption<Course|null|undefined>>({
+  get() {
+    if (course_selected.value === undefined) return select_option_undefined
+    if (course_selected.value === null)      return select_option_null
+
+    return course_selected.value?.toSelectOption()
+  },
+  set(option) {
+    course_selected.value = option.value
+  }
+})
+
+const category_option = computed<SelectOption<Category|null|undefined>>({
+  get() {
+    if (category_selected.value === undefined) return select_option_undefined
+    if (category_selected.value === null)      return select_option_null
+
+    return category_selected.value?.toSelectOption()
+  },
+  set(option) {
+    category_selected.value = option.value
+  }
+})
+
 const students = computed<Student[]>(() => {
   const elements = Object.values(course_selected.value?.students ?? {})
 
@@ -37,7 +61,7 @@ const students = computed<Student[]>(() => {
   return elements
 })
 
-async function search_course(name: string): Promise<ISelectOption<Course|null>[]> {
+async function search_course(name: string): Promise<SelectOption<Course|null|undefined>[]> {
   const data = await course_request.paginate(new CourseFilter({
     name: name,
     order: {
@@ -47,12 +71,13 @@ async function search_course(name: string): Promise<ISelectOption<Course|null>[]
   }))
 
   return [
-    { name: 'Ninguno', value: null },
+    select_option_undefined,
+    select_option_null,
     ...data.map(e => e.toSelectOption()),
   ]
 }
 
-async function search_category(name: string): Promise<ISelectOption<Category|null>[]> {
+async function search_category(name: string): Promise<SelectOption<Category|null|undefined>[]> {
   const data = await category_request.paginate(new CategoryFilter({
     name: name,
     type: CategoryTypeEnum.ATTENDANCE,
@@ -63,7 +88,8 @@ async function search_category(name: string): Promise<ISelectOption<Category|nul
   }))
 
   return [
-    { name: 'Ninguna', value: null },
+    select_option_undefined,
+    select_option_null,
     ...data.map(e => e.toSelectOption()),
   ]
 }
@@ -72,9 +98,10 @@ function restart_name_selected() {
   name_selected.value = ''
 }
 
-function restart_course_selected() {
+function restart_course() {
   course_selected .value = undefined
   student_selected.value = undefined
+  course_option.value = new SelectOption({ id: 'undefined', name: '',        value: undefined })
 }
 
 function restart_category_selected() {
@@ -175,7 +202,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
 
 watch(searcher_enabled, (value) => {
   restart_name_selected()
-  restart_course_selected()
+  restart_course()
   restart_category_selected()
 })
 </script>
@@ -202,19 +229,17 @@ watch(searcher_enabled, (value) => {
 
       <div v-if="!searcher_enabled" class="container page-filter">
         <v-selector
-          :model-value="course_selected?.toSelectOption() ?? { name: '', value: undefined }"
+          v-model="course_option"
           :placeholder="'Curso'"
           :request="search_course"
-          :restart="restart_course_selected"
-          @update:model-value="(value) => course_selected = value"
+          :restart="restart_course"
         />
 
         <v-selector
-          :model-value="category_selected?.toSelectOption() ?? { name: '', value: undefined }"
+          v-model="category_option"
           :placeholder="'Categoría'"
           :request="search_category"
           :restart="restart_category_selected"
-          @update:model-value="(value) => category_selected = value"
         />
 
         <button class="button solid text teal" @click="search.request()">Filtrar</button>
