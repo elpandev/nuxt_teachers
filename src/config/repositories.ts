@@ -30,6 +30,8 @@ import { FirestoreEventRepository } from "../modules/event/infrastructure/firest
 import { EventRequestRepository } from "../modules/event/aplication/request_repository";
 import { FirestoreCalendarByMonthRepository } from "../modules/calendar_by_month/infrastructure/firestore_repository";
 import { CalendarByMonthRequestRepository } from "../modules/calendar_by_month/aplication/request_repository";
+import { FirestoreTableRepository } from "../modules/table/infrastructure/firestore_repository";
+import { TableRequestRepository } from "../modules/table/aplication/request_repository";
 
 export const auth_repository              = new FirestoreAuthRepository()
 export const user_repository              = new FirestoreUserRepository()
@@ -42,6 +44,7 @@ export const grade_repository             = new FirestoreGradeRepository()
 export const task_repository              = new FirestoreTaskRepository()
 export const question_repository          = new FirestoreQuestionRepository()
 export const schedule_repository          = new FirestoreScheduleRepository()
+export const table_repository             = new FirestoreTableRepository()
 export const event_repository             = new FirestoreEventRepository()
 export const calentar_by_month_repository = new FirestoreCalendarByMonthRepository()
 export const student_task_repository      = new FirestoreStudentTaskRepository()
@@ -58,6 +61,7 @@ export const grade_request             = new GradeRequestRepository(grade_reposi
 export const task_request              = new TaskRequestRepository(task_repository)
 export const question_request          = new QuestionRequestRepository(question_repository)
 export const schedule_request          = new ScheduleRequestRepository(schedule_repository)
+export const table_request             = new TableRequestRepository(table_repository)
 export const event_request             = new EventRequestRepository(event_repository)
 export const calentar_by_month_request = new CalendarByMonthRequestRepository(calentar_by_month_repository)
 export const student_task_request      = new StudentTaskRequestRepository(student_task_repository)
