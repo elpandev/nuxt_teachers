@@ -1,40 +1,35 @@
 <script setup lang="ts" generic="T">
   import { nano_id } from '@/elpandev/utils/methods/nano_id';
-  import type { ISelectOption } from '../interfaces/select_option';
+  import { SelectOption } from '../models/select_option';
 
   interface Props {
     input?: boolean
     label?: string
     placeholder?: string
-    modelValue: ISelectOption<T>
     errors?: string[]
-    options?: ISelectOption<T>[]
-    request?: (text: string) => Promise<ISelectOption<T>[]>
+    options?: SelectOption<T>[]
+    request?: (text: string) => Promise<SelectOption<T>[]>
     restart?: () => void
   }
 
-  interface Emits {
-    (e: 'update:modelValue', value: T): any
-  }
+  const model = defineModel<SelectOption>()
+  const props = defineProps<Props>()
 
   const id              = nano_id()
   const input           = ref<HTMLInputElement>()
-  const props           = defineProps<Props>()
-  const emit            = defineEmits<Emits>()
-  const options         = ref<ISelectOption[]>(props.options ?? [])
-  const query           = ref<string>(props.modelValue.name)
+  const options         = ref<SelectOption[]>(props.options ?? [])
+  const query           = ref<string>(model.value?.name ?? '')
   const options_enabled = ref<boolean>(false)
 
   async function request_options() {
     options.value = props.options ?? await props.request?.(query.value) ?? []
   }
 
-  function select(option: ISelectOption) {
+  function select(option: SelectOption) {
     query.value = option.name
 
     options_enabled.value = false
-
-    emit('update:modelValue', option.value)
+    model.value = option
   }
 
   function on_input_focus() {
@@ -50,9 +45,8 @@
       const option = options.value.find(e => e.name === query.value)
 
       if (option) {
-        emit('update:modelValue', option.value)
-
         options_enabled.value = false
+        model.value = option
 
         query.value = option.name
       }
@@ -66,12 +60,6 @@
       await request_options()
     }
   }
-
-  watch(() => props.modelValue, (value) => {
-    if (query.value !== value.name) {
-      query.value = value.name
-    }
-  })
 </script>
 
 <template>

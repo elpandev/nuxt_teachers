@@ -1,14 +1,17 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
+import { Course, type ICourse } from "../../course/domain/model";
 
 export interface ITable extends IBaseModel  {
   name:        string
   description: string
+  course:      Partial<ICourse>
 }
 
 export class Table extends BaseModel<ITable> {
   public name:        string = '';
   public description: string = '';
+  public course:      Course = new Course();
 
   constructor(data?: Partial<ITable>) {
     super()
@@ -35,6 +38,7 @@ export class Table extends BaseModel<ITable> {
       if (data.id)          this.id          = data.id
       if (data.name)        this.name        = data.name
       if (data.description) this.description = data.description
+      if (data.course)      this.course      = new Course(data.course)
     }
 
     return this
@@ -46,6 +50,7 @@ export class Table extends BaseModel<ITable> {
     payload.id          = this.id
     payload.name        = this.name
     payload.description = this.description
+    payload.course      = this.course.toPayload()
 
     return payload
   }

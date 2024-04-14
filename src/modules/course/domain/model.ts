@@ -2,6 +2,7 @@ import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
 import { Student, type IStudent } from "../../student/domain/model";
+import { SelectOption } from "~/src/presentation/models/select_option";
 
 export interface ICourse extends IBaseModel  {
   name:           string
@@ -89,11 +90,11 @@ export class Course extends BaseModel<ICourse> implements ICourse {
     }
   }
 
-  public toSelectOption(): ISelectOption<Course> {
-    return {
+  public toSelectOption(): SelectOption<Course> {
+    return new SelectOption({
       name:  this.name,
       value: this,
-    }
+    })
   }
 
   public get students_count(): number   { return Object.keys(this.students).length }

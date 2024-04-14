@@ -32,6 +32,8 @@ import { FirestoreCalendarByMonthRepository } from "../modules/calendar_by_month
 import { CalendarByMonthRequestRepository } from "../modules/calendar_by_month/aplication/request_repository";
 import { FirestoreTableRepository } from "../modules/table/infrastructure/firestore_repository";
 import { TableRequestRepository } from "../modules/table/aplication/request_repository";
+import { FirestoreColumnRepository } from "../modules/column/infrastructure/firestore_repository";
+import { ColumnRequestRepository } from "../modules/column/aplication/request_repository";
 
 export const auth_repository              = new FirestoreAuthRepository()
 export const user_repository              = new FirestoreUserRepository()
@@ -47,6 +49,7 @@ export const schedule_repository          = new FirestoreScheduleRepository()
 export const table_repository             = new FirestoreTableRepository()
 export const event_repository             = new FirestoreEventRepository()
 export const calentar_by_month_repository = new FirestoreCalendarByMonthRepository()
+export const column_repository            = new FirestoreColumnRepository()
 export const student_task_repository      = new FirestoreStudentTaskRepository()
 export const student_question_repository  = new FirestoreStudentQuestionRepository()
 
@@ -64,6 +67,7 @@ export const schedule_request          = new ScheduleRequestRepository(schedule_
 export const table_request             = new TableRequestRepository(table_repository)
 export const event_request             = new EventRequestRepository(event_repository)
 export const calentar_by_month_request = new CalendarByMonthRequestRepository(calentar_by_month_repository)
+export const column_request            = new ColumnRequestRepository(column_repository)
 export const student_task_request      = new StudentTaskRequestRepository(student_task_repository)
 export const student_question_request  = new StudentQuestionRequestRepository(student_question_repository)
 

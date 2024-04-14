@@ -9,6 +9,7 @@ export const enum TableEnum {
   CATEGORIES         = 'categories',
   EVENTS             = 'events',
   TABLES             = 'tables',
+  COLUMNS            = 'columns',
   CALENDAR_BY_MONTHS = 'calendar_by_months',
   STUDENT_TASK       = 'student_tasks',
   STUDENT_QUESTION   = 'student_questions',

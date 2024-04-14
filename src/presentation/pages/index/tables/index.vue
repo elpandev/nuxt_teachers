@@ -34,12 +34,14 @@
               :path    = "'name'"
               @update:model-value="search_by_order"
             />
+            <th>Curso</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="table in data?.tables" :key="table.id">
             <td>{{ table.name }}</td>
+            <td>{{ table.course.name }}</td>
             <td class="actions">
               <v-popup-menu>
                 <nuxt-link :to="`/tables/${table.id}`"><v-icon-visibility /> Ver</nuxt-link>
