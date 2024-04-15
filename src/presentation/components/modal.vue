@@ -1,7 +1,3 @@
-<script setup lang="ts">
-  const emit = defineEmits<{ (e: 'closed'): void }>()
-</script>
-
 <template>
   <div class="modal">
     <div class="curtain" @click="emit('closed')"></div>
@@ -10,6 +6,10 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const emit = defineEmits<{ (e: 'closed'): void }>()
+</script>
 
 <style lang="scss">
 .modal {
