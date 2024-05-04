@@ -210,7 +210,10 @@ const { request: attach } = useRequest(async (user: User) => {
 
   await user_attendance_request.store(user_attendance)
 
-  data.value!.user_attendances = [...data.value!.user_attendances, user_attendance]
+  data.value!.user_attendances.push(user_attendance)
+  data.value!.user_attendances.sort((a, b) => a.user_name.localeCompare(b.user_name))
+
+  data.value!.user_attendances = [...data.value!.user_attendances]
 })
 
 const { request: detach } = useRequest(async (user_id: string) => {
