@@ -1,19 +1,32 @@
-import { auth as fireauth } from "~/src/config/firebase"
 import { Subscription } from "~/src/modules/subscription/domain/model"
 import { User } from "~/src/modules/user/domain/model"
+import { Token } from "../models/token"
 
-type IAuth = {
-  user:         User
-  subscription: Subscription
-  loggedIn:     boolean
-}
-
-class LocalAuth implements IAuth {
+class LocalAuth {
+  public token:        Token        = new Token()
   public user:         User         = new User()
   public subscription: Subscription = new Subscription()
 
-  public get loggedIn(): boolean {
-    return fireauth.currentUser != null
+  public get_token_from_local(): Token {
+    const token_payload = localStorage.getItem('token')
+
+    if (token_payload) {
+      const token = new Token(JSON.parse(token_payload))
+  
+      token.exists = true
+  
+      return token
+    }
+  
+    return new Token()
+  }
+
+  public destroy_token_from_local() {
+    localStorage.removeItem('token')
+  }
+
+  public store_token_to_local(token: Token) {
+    localStorage.setItem('token', JSON.stringify(token.toPayload()))
   }
 }
 

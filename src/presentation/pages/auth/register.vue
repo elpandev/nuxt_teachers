@@ -2,8 +2,16 @@
 import { Validator } from '@/elpandev/validator';
 import type { IBaseAuthRepositoryRegister } from '~/elpandev/hexagonal/base/domain/auth_repository';
 import { auth_request } from '~/src/config/repositories';
+import { User } from '~/src/modules/user/domain/model';
 
-const data      = reactive<IBaseAuthRepositoryRegister>({ name: 'Francisco Moncayo', email: 'javoavmystery@gmail.com', password: '123456', password_confirmation: '123456' })
+const data = reactive<IBaseAuthRepositoryRegister>({
+  id:       new User().id,
+  name:     'Francisco Moncayo',
+  email:    'javoavmystery@gmail.com',
+  password: '123456',
+  password_confirmation: '123456',
+})
+
 const validator = ref<Validator>(new Validator({ payload: {}, rules: {} }))
 
 const { request, pending } = useRequest(async () => {

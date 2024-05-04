@@ -13,7 +13,6 @@ import { FirestoreGradeRepository } from "../modules/grade/infrastructure/firest
 import { FirestoreTaskRepository } from "../modules/task/infrastructure/firestore_repository";
 import { FirestoreQuestionRepository } from "../modules/question/infrastructure/firestore_repository";
 import { AuthRequestRepository } from "../modules/auth/aplication/request_repository";
-import { FirestoreAuthRepository } from "../modules/auth/infrastructure/firestore_repository";
 import { FirestoreSubscriptionRepository } from "../modules/subscription/infrastructure/firestore_repository";
 import { SubscriptionRequestRepository } from "../modules/subscription/aplication/request_repository";
 import { FirestoreCategoryRepository } from "../modules/category/infrastructure/firestore_repository";
@@ -36,8 +35,9 @@ import { FetchUserRepository } from "../modules/user/infrastructure/fetch_reposi
 import { FetchCourseRepository } from "../modules/course/infrastructure/fetch_repository";
 import { UserCourseRequestRepository } from "../modules/user_course/application/request_repository";
 import { FetchUserCourseRepository } from "../modules/user_course/infrastructure/fetch_repository";
+import { FetchAuthRepository } from "../modules/auth/infrastructure/fetch_repository";
 
-export const auth_repository              = new FirestoreAuthRepository()
+export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
 export const category_repository          = new FirestoreCategoryRepository()
 export const subscription_repository      = new FirestoreSubscriptionRepository()

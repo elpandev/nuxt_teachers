@@ -1,12 +1,11 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "~/src/config/firebase";
+import { auth } from "../states/auth"
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   console.log('middleware => auth')
 
-  // await new Promise((resolve) => onAuthStateChanged(auth, resolve))
+  auth.token = auth.get_token_from_local()
 
-  // if (auth.currentUser == null) {
-  //   return navigateTo('/auth/login')
-  // }
+  if (!auth.token.exists || auth.token.expired) {
+    return navigateTo('/auth/login')
+  }
 })

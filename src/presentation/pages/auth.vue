@@ -1,25 +1,30 @@
 <script setup lang="ts">
-  import { EventAuthRegister, EventAuthLogin, observer } from '~/src/shared/domain/observer';
+import { EventAuthRegister, EventAuthLogin, observer } from '~/src/shared/domain/observer';
+import { auth } from '../states/auth';
 
-  const route = useRoute()
+const route = useRoute()
 
-  function on_login(event: EventAuthLogin) {
-    navigateTo('/')
-  }
+function on_login(event: EventAuthLogin) {
+  auth.store_token_to_local(event.token)
 
-  function on_register(event: EventAuthRegister) {
-    navigateTo('/')
-  }
+  navigateTo('/')
+}
 
-  onMounted(() => {
-    observer.listen(EventAuthLogin,    on_login)
-    observer.listen(EventAuthRegister, on_register)
-  })
+function on_register(event: EventAuthRegister) {
+  auth.store_token_to_local(event.token)
 
-  onUnmounted(() => {
-    observer.remove(EventAuthLogin,    on_login)
-    observer.remove(EventAuthRegister, on_register)
-  })
+  navigateTo('/')
+}
+
+onMounted(() => {
+  observer.listen(EventAuthLogin,    on_login)
+  observer.listen(EventAuthRegister, on_register)
+})
+
+onUnmounted(() => {
+  observer.remove(EventAuthLogin,    on_login)
+  observer.remove(EventAuthRegister, on_register)
+})
 </script>
 
 <template>
