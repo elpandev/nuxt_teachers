@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { user_request } from '~/src/config/repositories';
   import { UserFilter } from '~/src/modules/user/domain/filter';
+import { user_role_locale } from '~/src/modules/user/domain/model';
   import { useSnackbar } from '~/src/presentation/states/snackbar';
 
   const snackbar = useSnackbar()
@@ -41,6 +42,7 @@
       <table class="table">
         <thead>
           <tr>
+            <th>Rol</th>
             <th>Nombre</th>
             <th>Email</th>
             <th></th>
@@ -48,6 +50,7 @@
         </thead>
         <tbody>
           <tr v-for="user in data?.users" :key="user.id">
+            <td>{{ user_role_locale(user.role) }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
             <td class="actions">

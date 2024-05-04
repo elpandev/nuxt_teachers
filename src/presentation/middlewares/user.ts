@@ -6,17 +6,17 @@ import { User } from "~/src/modules/user/domain/model"
 export default defineNuxtRouteMiddleware(async (to, from) => {
   console.log('middleware => user')
 
-  const current = fireauth.currentUser
+  // const current = fireauth.currentUser
 
-  if (current && !auth.user.exists) {
-    const user = await user_request.get(current.uid)
+  // if (current && !auth.user.exists) {
+  //   const user = await user_request.get(current.uid)
 
-    auth.user = user ?? new User({
-      id:    current.uid,
-      name:  current.displayName ?? undefined,
-      email: current.email ?? undefined
-    })
+  //   auth.user = user ?? new User({
+  //     id:    current.uid,
+  //     name:  current.displayName ?? undefined,
+  //     email: current.email ?? undefined
+  //   })
 
-    auth.user.exists = true
-  }
+  //   auth.user.exists = true
+  // }
 })

@@ -1,16 +1,40 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
-import { Subscription, type ISubscription } from "../../subscription/domain/model";
+import { code_id } from "~/elpandev/utils";
+import { SelectOption } from "~/src/presentation/models/select_option";
+
+export enum UserRoleEnum {
+  ADMIN   = 'ADMIN',
+  TEACHER = 'TEACHER',
+  STUDENT = 'STUDENT',
+  PARENT  = 'PARENT',
+}
+
+export function user_role_locale(type: UserRoleEnum): string {
+  switch (type) {
+    case UserRoleEnum.ADMIN:   return 'Administrador';
+    case UserRoleEnum.TEACHER: return 'Profesor';
+    case UserRoleEnum.STUDENT: return 'Estudiante';
+    case UserRoleEnum.PARENT:  return 'Representante';
+  
+    default: return 'Desconocido';
+  }
+}
+
+export const user_role_options: SelectOption[] = Object.values(UserRoleEnum)
+  .map(value => new SelectOption(({  id: value, name: user_role_locale(value), value })))
 
 export interface IUser extends IBaseModel {
   name:  string
   email: string
+  role:  UserRoleEnum
 }
 
 export class User extends BaseModel<IUser> implements IUser {
-  public id:    string = '';
+  public id:    string = code_id('T4gWkQn73fhuryNcHFa1vpICeKPl9BMjz2dDXsxOYGA6R5LVU8mtEwqSobZi0J');
   public name:  string = '';
   public email: string = '';
+  public role:  UserRoleEnum = UserRoleEnum.STUDENT;
 
   constructor(data?: Partial<IUser>) {
     super()
@@ -33,9 +57,10 @@ export class User extends BaseModel<IUser> implements IUser {
 
   public fromPayload(data?: Partial<IUser>): this {
     if (data) {
-      if (data.id)    this.id    = data.id
-      if (data.name)  this.name  = data.name
-      if (data.email) this.email = data.email
+      if (data.id    !== undefined) this.id    = data.id
+      if (data.name  !== undefined) this.name  = data.name
+      if (data.email !== undefined) this.email = data.email
+      if (data.role  !== undefined) this.role  = data.role
     }
 
     return this
@@ -46,6 +71,7 @@ export class User extends BaseModel<IUser> implements IUser {
       id:    this.id,
       name:  this.name,
       email: this.email,
+      role:  this.role,
     }
   }
 }

@@ -34,9 +34,10 @@ import { FirestoreTableRepository } from "../modules/table/infrastructure/firest
 import { TableRequestRepository } from "../modules/table/aplication/request_repository";
 import { FirestoreColumnRepository } from "../modules/column/infrastructure/firestore_repository";
 import { ColumnRequestRepository } from "../modules/column/aplication/request_repository";
+import { FetchUserRepository } from "../modules/user/infrastructure/fetch_repository";
 
 export const auth_repository              = new FirestoreAuthRepository()
-export const user_repository              = new FirestoreUserRepository()
+export const user_repository              = new FetchUserRepository()
 export const category_repository          = new FirestoreCategoryRepository()
 export const subscription_repository      = new FirestoreSubscriptionRepository()
 export const student_repository           = new FirestoreStudentRepository()
