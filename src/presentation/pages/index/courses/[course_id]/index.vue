@@ -28,7 +28,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
       </header>
 
       <div class="page-navigator">
-        <nuxt-link :to="`/courses/${course_id}/students`">Estudiantes</nuxt-link>
+        <nuxt-link :to="`/courses/${course_id}/users`">Usuarios</nuxt-link>
         <template v-if="data.course.students_count > 0">
           <nuxt-link :to="`/courses/${course_id}/attendances`">Asistencias</nuxt-link>
           <nuxt-link :to="`/courses/${course_id}/grades`">Calificaciones</nuxt-link>

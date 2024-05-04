@@ -1,37 +1,3 @@
-<script setup lang="ts">
-  import { user_request } from '~/src/config/repositories';
-  import { UserFilter } from '~/src/modules/user/domain/filter';
-import { user_role_locale } from '~/src/modules/user/domain/model';
-  import { useSnackbar } from '~/src/presentation/states/snackbar';
-
-  const snackbar = useSnackbar()
-
-  const destroy = useRequest(async (user_id: string) => {
-    try {
-      await user_request.destroy(user_id)
-
-      data.value?.users.removeWhere(user => user.id == user_id)
-  
-      snackbar.value.success(`El usuario ha sido eliminado`)
-    }
-
-    catch (error) {
-      console.error(error)
-    }
-  })
-
-  const { data, pending } = await useLazyAsyncData(async () => {
-    const filter = new UserFilter()
-
-    const [users, count] = await Promise.all([
-      user_request.paginate  (filter),
-      user_request.count(filter),
-    ])
-
-    return { users, count }
-  })
-</script>
-
 <template>
   <main v-if="!pending" class="documents">
     <header>
@@ -45,6 +11,7 @@ import { user_role_locale } from '~/src/modules/user/domain/model';
             <th>Rol</th>
             <th>Nombre</th>
             <th>Email</th>
+            <th>Cursos</th>
             <th></th>
           </tr>
         </thead>
@@ -53,6 +20,7 @@ import { user_role_locale } from '~/src/modules/user/domain/model';
             <td>{{ user_role_locale(user.role) }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ user.courses_count }}</td>
             <td class="actions">
               <v-popup-menu>
                 <nuxt-link :to="`/users/${user.id}`"><v-icon-visibility /> Ver</nuxt-link>
@@ -67,3 +35,37 @@ import { user_role_locale } from '~/src/modules/user/domain/model';
   </main>
   <v-loader v-else />
 </template>
+
+<script setup lang="ts">
+import { user_request } from '~/src/config/repositories';
+import { UserFilter } from '~/src/modules/user/domain/filter';
+import { user_role_locale } from '~/src/modules/user/domain/model';
+import { useSnackbar } from '~/src/presentation/states/snackbar';
+
+const snackbar = useSnackbar()
+
+const destroy = useRequest(async (user_id: string) => {
+  try {
+    await user_request.destroy(user_id)
+
+    data.value?.users.removeWhere(user => user.id == user_id)
+
+    snackbar.value.success(`El usuario ha sido eliminado`)
+  }
+
+  catch (error) {
+    console.error(error)
+  }
+})
+
+const { data, pending } = await useLazyAsyncData(async () => {
+  const filter = new UserFilter()
+
+  const [users, count] = await Promise.all([
+    user_request.paginate  (filter),
+    user_request.count(filter),
+  ])
+
+  return { users, count }
+})
+</script>

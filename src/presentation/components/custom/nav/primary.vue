@@ -34,10 +34,6 @@ const shared = useShared()
           <nuxt-link class="button" :to="`/users/create`"><v-icon-add /></nuxt-link>
         </li>
         <li>
-          <nuxt-link class="link"   :to="`/students`"><v-icon-person-outline /><span>Estudiantes</span></nuxt-link>
-          <nuxt-link class="button" :to="`/students/create`"><v-icon-add /></nuxt-link>
-        </li>
-        <li>
           <nuxt-link class="link"   :to="`/courses`"><v-icon-school-outline /><span>Aulas</span></nuxt-link>
           <nuxt-link class="button" :to="`/courses/create`"><v-icon-add /></nuxt-link>
         </li>

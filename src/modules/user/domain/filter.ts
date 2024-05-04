@@ -1,18 +1,18 @@
 import { BaseFilter, QueryWhere, type IBaseFilter, type IQueryFilter } from "~/elpandev/hexagonal/base/domain/filter";
-import type { RoleEnum } from "./model";
+import { UserRoleEnum } from "./model";
 
 interface IUserFilter extends IBaseFilter {
-  role:      RoleEnum|undefined
-  email:     string  |undefined
-  season_id: string  |undefined
-  course_id: string  |undefined
+  role:      UserRoleEnum|undefined
+  email:     string      |undefined
+  season_id: string      |undefined
+  course_id: string      |undefined
 }
 
 export class UserFilter extends BaseFilter implements IUserFilter {
-  public role:      RoleEnum|undefined = undefined
-  public email:     string  |undefined = undefined
-  public season_id: string  |undefined = undefined
-  public course_id: string  |undefined = undefined
+  public role:      UserRoleEnum|undefined = undefined
+  public email:     string      |undefined = undefined
+  public season_id: string      |undefined = undefined
+  public course_id: string      |undefined = undefined
 
   constructor(data?: Partial<IUserFilter>) {
     super(data)
@@ -35,5 +35,24 @@ export class UserFilter extends BaseFilter implements IUserFilter {
     else if (this.season_id) { queries.push(new QueryWhere('contains', 'array-contains', `SEASON_${this.season_id}`)) }
 
     return queries
+  }
+
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    if (typeof this.email == 'string') {
+      params.set('email', this.email)
+    }
+
+    if (typeof this.role == 'string' && Object.values(UserRoleEnum).includes(this.role)) {
+      params.set('role', this.role)
+    }
+
+    
+    if (typeof this.course_id == 'string') {
+      params.set('course_id', this.course_id)
+    }
+
+    return params
   }
 }

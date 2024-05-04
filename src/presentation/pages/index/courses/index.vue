@@ -6,7 +6,7 @@ import { TableEnum } from '~/src/presentation/enums/tables';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
 const snackbar = useSnackbar()
-const filter   = reactive<CourseFilter>(new CourseFilter({ order: { path: 'name', direction: OrderDirectionEnum.ASC } }))
+const filter   = reactive<CourseFilter>(new CourseFilter({ teachers: true, order: { path: 'name', direction: OrderDirectionEnum.ASC } }))
 
 const destroy = useRequest(async (course_id: string) => {
   try {
@@ -74,11 +74,17 @@ const { data, pending } = await useLazyAsyncData(request_data)
               :path   = "'name'"
               @update:model-value="search_by_order"
             />
-            <th>Descripción</th>
+            <th>Profesor</th>
             <v-th-orderable
               v-model  = "filter.order"
               :name    = "'Estudiantes'"
               :path    = "'students_count'"
+              @update:model-value="search_by_order"
+            />
+            <v-th-orderable
+              v-model  = "filter.order"
+              :name    = "'Profesores'"
+              :path    = "'teachers_count'"
               @update:model-value="search_by_order"
             />
             <th></th>
@@ -87,11 +93,12 @@ const { data, pending } = await useLazyAsyncData(request_data)
         <tbody>
           <tr v-for="course in data?.courses" :key="course.id">
             <td class="ellipsis">{{ course.name }}</td>
-            <td class="ellipsis">{{ course.description }}</td>
+            <td class="ellipsis">{{ course.teachers_name.join(', ')}}</td>
             <td>{{ course.students_count }}</td>
+            <td>{{ course.teachers_count }}</td>
             <td class="actions">
               <v-popup-menu>
-                <nuxt-link :to="`/courses/${course.id}/students`"><v-icon-visibility /> Ver</nuxt-link>
+                <nuxt-link :to="`/courses/${course.id}/users`"><v-icon-visibility /> Ver</nuxt-link>
                 <nuxt-link :to="`/courses/${course.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
                 <button @click="destroy.request(course.id)"><v-icon-destroy /> Eliminar</button>
               </v-popup-menu>

@@ -1,6 +1,6 @@
 export enum OrderDirectionEnum {
-  ASC  = 'asc',
-  DESC = 'desc',
+  ASC  = 'ASC',
+  DESC = 'DESC',
 }
 
 export interface IBaseFilterOrder {
@@ -53,6 +53,26 @@ export abstract class BaseFilter implements IBaseFilter {
     if (this.limit) { queries.push(new QueryLimit(this.limit)) }
 
     return queries
+  }
+
+  public toParams(): URLSearchParams {
+    const params: Record<string, string> = {}
+
+    if (typeof this.limit == 'number' && this.limit > 0) {
+      params.limit = this.limit.toString()
+    }
+
+    if (typeof this.order == 'object') {
+      if (typeof this.order.path == 'string') {
+        params.order_by = this.order.path.toString()
+      }
+
+      if (Object.values(OrderDirectionEnum).includes(this.order.direction)) {
+        params.order_direction = this.order.direction.toString()
+      }
+    }
+
+    return new URLSearchParams(params)
   }
 
   // abstract get enabled(): boolean

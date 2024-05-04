@@ -4,12 +4,14 @@ interface ICourseFilter extends IBaseFilter {
   name?:           string
   student_id?:     string
   students_count?: number
+  teachers?:       boolean
 }
 
 export class CourseFilter extends BaseFilter implements ICourseFilter {
   public name?:           string
   public student_id?:     string
   public students_count?: number
+  public teachers?: boolean
 
   constructor(data?: Partial<ICourseFilter>) {
     super(data)
@@ -18,6 +20,7 @@ export class CourseFilter extends BaseFilter implements ICourseFilter {
       if (data.name)           { this.name           = data.name }
       if (data.student_id)     { this.student_id     = data.student_id }
       if (data.students_count) { this.students_count = data.students_count }
+      if (data.teachers)       { this.teachers       = data.teachers }
     }
   }
 
@@ -39,5 +42,15 @@ export class CourseFilter extends BaseFilter implements ICourseFilter {
     }
 
     return queries
+  }
+
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    if (this.teachers === true) {
+      params.set('teachers', `${this.teachers}`)
+    }
+
+    return params
   }
 }

@@ -1,13 +1,19 @@
-export function useRequest<T, U extends (...args: any[]) => Promise<T>>(fn: U) {
+export function useRequest<T>(fn: (...args: any[]) => Promise<T>) {
+  const count     = ref<number>(0)
+  const data      = ref<T>()
   const pending   = ref<boolean>(false)
   const completed = ref<boolean>(false)
 
   async function request(...args: any[]): Promise<void> {
+    if (pending.value) return
+
+    count.value++
+
     pending  .value = true
     completed.value = false
 
     try {
-      await fn(...args)
+      data.value = await fn(...args)
 
       completed.value = true
     }
@@ -19,5 +25,5 @@ export function useRequest<T, U extends (...args: any[]) => Promise<T>>(fn: U) {
     pending.value = false
   }
 
-  return { request: request as U, pending, completed }
+  return { request: request as (...args: any[]) => Promise<T>, pending, completed, data, count }
 }

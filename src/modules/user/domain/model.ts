@@ -25,9 +25,11 @@ export const user_role_options: SelectOption[] = Object.values(UserRoleEnum)
   .map(value => new SelectOption(({  id: value, name: user_role_locale(value), value })))
 
 export interface IUser extends IBaseModel {
-  name:  string
-  email: string
-  role:  UserRoleEnum
+  id:            string
+  name:          string
+  email:         string
+  role:          UserRoleEnum
+  courses_count: number
 }
 
 export class User extends BaseModel<IUser> implements IUser {
@@ -35,6 +37,7 @@ export class User extends BaseModel<IUser> implements IUser {
   public name:  string = '';
   public email: string = '';
   public role:  UserRoleEnum = UserRoleEnum.STUDENT;
+  public courses_count: number = 0;
 
   constructor(data?: Partial<IUser>) {
     super()
@@ -57,10 +60,11 @@ export class User extends BaseModel<IUser> implements IUser {
 
   public fromPayload(data?: Partial<IUser>): this {
     if (data) {
-      if (data.id    !== undefined) this.id    = data.id
-      if (data.name  !== undefined) this.name  = data.name
-      if (data.email !== undefined) this.email = data.email
-      if (data.role  !== undefined) this.role  = data.role
+      if (data.id            !== undefined) this.id            = data.id
+      if (data.name          !== undefined) this.name          = data.name
+      if (data.email         !== undefined) this.email         = data.email
+      if (data.role          !== undefined) this.role          = data.role
+      if (data.courses_count !== undefined) this.courses_count = data.courses_count
     }
 
     return this
@@ -68,10 +72,11 @@ export class User extends BaseModel<IUser> implements IUser {
 
   public toPayload(): Partial<IUser> {
     return {
-      id:    this.id,
-      name:  this.name,
-      email: this.email,
-      role:  this.role,
+      id:            this.id,
+      name:          this.name,
+      email:         this.email,
+      role:          this.role,
+      courses_count: this.courses_count,
     }
   }
 }
