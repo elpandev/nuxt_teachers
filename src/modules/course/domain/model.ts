@@ -5,8 +5,9 @@ import { Student, type IStudent } from "../../student/domain/model";
 import { SelectOption } from "~/src/presentation/models/select_option";
 import { code_id } from "~/elpandev/utils";
 import { User, type IUser } from "../../user/domain/model";
+import type { IAttendanceCount } from "../../attendance/domain/model";
 
-export interface ICourse extends IBaseModel  {
+export interface ICourse extends IBaseModel, IAttendanceCount  {
   id:             string
   name:           string
   description:    string
@@ -21,6 +22,10 @@ export class Course extends BaseModel<ICourse> implements ICourse {
   public description:    string = '';
   public students_count: number = 0;
   public teachers_count: number = 0;
+  public present_count:  number = 0
+  public late_count:     number = 0
+  public absent_count:   number = 0
+  public expelled_count: number = 0
   public teachers:       User[] = [];
 
   constructor(data?: Partial<ICourse>) {
@@ -50,6 +55,10 @@ export class Course extends BaseModel<ICourse> implements ICourse {
       if (data.description)    this.description    = data.description
       if (data.teachers_count) this.teachers_count = data.teachers_count
       if (data.students_count) this.students_count = data.students_count
+      if (data.present_count  !== undefined) this.present_count  = data.present_count
+      if (data.late_count     !== undefined) this.late_count     = data.late_count
+      if (data.absent_count   !== undefined) this.absent_count   = data.absent_count
+      if (data.expelled_count !== undefined) this.expelled_count = data.expelled_count
       if (data.teachers)       this.teachers       = data.teachers.map(e => new User(e))
     }
 
@@ -57,16 +66,18 @@ export class Course extends BaseModel<ICourse> implements ICourse {
   }
 
   public toPayload(): Partial<ICourse> {
-    const payload: Partial<ICourse> = {}
-
-    payload.id             = this.id
-    payload.name           = this.name
-    payload.description    = this.description
-    payload.teachers_count = this.teachers_count
-    payload.students_count = this.students_count
-    payload.teachers       = this.teachers.map(e => e.toPayload())
-
-    return payload
+    return {
+      id:             this.id,
+      name:           this.name,
+      description:    this.description,
+      teachers_count: this.teachers_count,
+      students_count: this.students_count,
+      present_count:  this.present_count,
+      late_count:     this.late_count,
+      absent_count:   this.absent_count,
+      expelled_count: this.expelled_count,
+      teachers:       this.teachers.map(e => e.toPayload()),
+    }
   }
 
   public toStudentRelation(): Partial<ICourse> {

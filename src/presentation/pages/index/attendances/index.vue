@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { category_request, course_request, attendance_request } from '~/src/config/repositories';
+import { category_request, course_request, attendance_request, user_request } from '~/src/config/repositories';
 import { AttendanceFilter } from '~/src/modules/attendance/domain/filter';
-import type { Student } from '~/src/modules/student/domain/model';
 import { Course } from '~/src/modules/course/domain/model';
 import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
 import { CategoryFilter } from '~/src/modules/category/domain/filter';
@@ -11,25 +10,16 @@ import { CourseFilter } from '~/src/modules/course/domain/filter';
 import { AttendanceRegisterStatusEnum, attendance_register_status_locale } from '~/src/modules/attendance/domain/values/register';
 import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
 import type { IUser, User } from '~/src/modules/user/domain/model';
+import { UserFilter } from '~/src/modules/user/domain/filter';
 
 const snackbar          = useSnackbar()
 const name_selected     = ref<string>('')
 const course_selected   = ref<Course|null>()
-const student_selected  = ref<Student>()
+const user_selected     = ref<User>()
 const category_selected = ref<Category|null>()
 const filter            = reactive(new AttendanceFilter({ order: { path: 'date_at', direction: OrderDirectionEnum.DESC } }))
 const searcher_enabled  = ref<boolean>(false)
-const students          = ref<User[]>([])
-
-const present_count  = ref<number>(0)
-const late_count     = ref<number>(0)
-const absent_count   = ref<number>(0)
-const expelled_count = ref<number>(0)
-
-const present_average  = ref<number>(0)
-const late_average     = ref<number>(0)
-const absent_average   = ref<number>(0)
-const expelled_average = ref<number>(0)
+const users             = ref<User[]>([])
 
 const course_option = computed<SelectOption<Course|null|undefined>>({
   get() {
@@ -94,63 +84,13 @@ function restart_name_selected() {
 
 function restart_course() {
   course_selected .value = undefined
-  student_selected.value = undefined
-  course_option.value = new SelectOption({ id: 'undefined', name: '',        value: undefined })
+  user_selected.value = undefined
+  course_option.value = new SelectOption({ id: 'undefined', name: '', value: undefined })
 }
 
 function restart_category_selected() {
   category_selected .value = undefined
 }
-
-const request_average = useRequest(async () => {
-  const course   = course_selected  .value === null ? null : course_selected  .value
-  const category = category_selected.value === null ? null : category_selected.value
-
-  const filter = new AttendanceFilter({ course, category })
-
-  await Promise.all([
-    attendance_request
-      .sum(`resume.status.${AttendanceRegisterStatusEnum.PRESENT}.count`, filter)
-      .then(average => present_average.value = average),
-
-    attendance_request
-      .sum(`resume.status.${AttendanceRegisterStatusEnum.LATE}.count`, filter)
-      .then(average => late_average.value = average),
-
-    attendance_request
-      .sum(`resume.status.${AttendanceRegisterStatusEnum.ABSENT}.count`, filter)
-      .then(average => absent_average.value = average),
-
-    attendance_request
-      .sum(`resume.status.${AttendanceRegisterStatusEnum.EXPELLED}.count`, filter)
-      .then(average => expelled_average.value = average),
-  ])
-})
-
-const request_student_average = useRequest(async (student?: Student) => {
-  student_selected.value = student
-
-  const course   = course_selected  .value === null ? null : course_selected  .value
-  const category = category_selected.value === null ? null : category_selected.value
-
-  await Promise.all([
-    attendance_request
-      .count(new AttendanceFilter({ course, category, student, student_status: AttendanceRegisterStatusEnum.PRESENT }))
-      .then(count => present_count.value = count),
-
-    attendance_request
-      .count(new AttendanceFilter({ course, category, student, student_status: AttendanceRegisterStatusEnum.LATE }))
-      .then(count => late_count.value = count),
-
-    attendance_request
-      .count(new AttendanceFilter({ course, category, student, student_status: AttendanceRegisterStatusEnum.ABSENT }))
-      .then(count => absent_count.value = count),
-
-    attendance_request
-      .count(new AttendanceFilter({ course, category, student, student_status: AttendanceRegisterStatusEnum.EXPELLED }))
-      .then(count => expelled_count.value = count),
-  ])
-})
 
 const search = useRequest(async () => {
   const course   = course_selected  .value === null ? null : course_selected  .value
@@ -163,8 +103,7 @@ const search = useRequest(async () => {
   const [attendances, count] = await Promise.all([
     attendance_request.paginate(filter),
     attendance_request.count(filter),
-    request_average.request(),
-    request_student_average.request(student_selected.value ?? students.value[0]),
+    request_users(),
   ])
 
   data.value!.attendances = attendances
@@ -184,6 +123,15 @@ const destroy = useRequest(async (attendance_id: string) => {
     console.error(error)
   }
 })
+
+const { request: request_users } = useRequest(async () => {
+  users.value = await user_request.paginate(new UserFilter({
+    course_id: course_selected.value?.id
+  }))
+
+  user_selected.value = users.value[0]
+})
+
 
 const { data, pending } = await useLazyAsyncData(async () => {
   const [attendances, count] = await Promise.all([
@@ -242,21 +190,21 @@ watch(searcher_enabled, (value) => {
 
       <template v-if="filter.course && course_selected && filter.course.id == course_selected.id">
         <div class="attendances-statistics">
-          <section class="container students">
+          <section class="container users">
             <ul>
-              <template v-for="student in students" :key="student.id">
-                <li @click="request_student_average.request(student)" :class="{ enabled: student_selected?.id == student.id }">
-                  {{ student.name }}
+              <template v-for="user in users" :key="user.id">
+                <li @click="user_selected = user" :class="{ enabled: user_selected?.id == user.id }">
+                  {{ user.name }}
                 </li>
               </template>
             </ul>
           </section>
   
           <section class="container percents">
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="present_count"  :max="data.count" :average="present_average/students.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="late_count"     :max="data.count" :average="late_average/students.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="absent_count"   :max="data.count" :average="absent_average/students.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="expelled_count" :max="data.count" :average="expelled_average/students.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="user_selected!.present_count"  :max="data.count" :average="course_selected!.present_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="user_selected!.late_count"     :max="data.count" :average="course_selected!.late_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="user_selected!.absent_count"   :max="data.count" :average="course_selected!.absent_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="user_selected!.expelled_count" :max="data.count" :average="course_selected!.expelled_count/users.length" />
           </section>
         </div>
       </template>
@@ -285,7 +233,7 @@ watch(searcher_enabled, (value) => {
                 :name = "'Categoría'"
                 :path = "'category_name'"
               />
-              <template v-if="student_selected">
+              <template v-if="user_selected">
                 <th>Estado</th>
               </template>
               <v-message is="th">
@@ -317,8 +265,8 @@ watch(searcher_enabled, (value) => {
               <td>{{ attendance.late_count }}</td>
               <td>{{ attendance.absent_count }}</td>
               <td>{{ attendance.expelled_count }}</td>
-              <!-- <template v-if="student_selected">
-                <td :class="`status-${attendance.registers[student_selected.id]?.status.toLowerCase()}`">{{ attendance_register_status_locale(attendance.registers[student_selected.id]?.status) }}</td>
+              <!-- <template v-if="user_selected">
+                <td :class="`status-${attendance.registers[user_selected.id]?.status.toLowerCase()}`">{{ attendance_register_status_locale(attendance.registers[user_selected.id]?.status) }}</td>
               </template> -->
               <td class="actions">
                 <v-popup-menu>
@@ -345,7 +293,7 @@ watch(searcher_enabled, (value) => {
     display: grid;
     gap: 9px;
     height: 200px;
-    &.students {
+    &.users {
       overflow-y: scroll;
       padding: 12px;
       ul {

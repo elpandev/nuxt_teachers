@@ -19,15 +19,18 @@ export interface IAttendanceCourse {
   course_name:   string|null
 }
 
-export interface IAttendance extends IBaseModel, IAttendanceCategory, IAttendanceCourse {
-  id:             string
-  name:           string
-  description:    string
-  date_at:        number
+export interface IAttendanceCount {
   present_count:  number
   late_count:     number
   absent_count:   number
   expelled_count: number
+}
+
+export interface IAttendance extends IBaseModel, IAttendanceCategory, IAttendanceCourse, IAttendanceCount {
+  id:          string
+  name:        string
+  description: string
+  date_at:     number
 }
 
 export class Attendance extends BaseModel<IAttendance> {
