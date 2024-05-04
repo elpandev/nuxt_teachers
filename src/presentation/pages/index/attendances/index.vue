@@ -10,6 +10,7 @@ import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { CourseFilter } from '~/src/modules/course/domain/filter';
 import { AttendanceRegisterStatusEnum, attendance_register_status_locale } from '~/src/modules/attendance/domain/values/register';
 import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
+import type { IUser, User } from '~/src/modules/user/domain/model';
 
 const snackbar          = useSnackbar()
 const name_selected     = ref<string>('')
@@ -18,6 +19,7 @@ const student_selected  = ref<Student>()
 const category_selected = ref<Category|null>()
 const filter            = reactive(new AttendanceFilter({ order: { path: 'date_at', direction: OrderDirectionEnum.DESC } }))
 const searcher_enabled  = ref<boolean>(false)
+const students          = ref<User[]>([])
 
 const present_count  = ref<number>(0)
 const late_count     = ref<number>(0)
@@ -51,14 +53,6 @@ const category_option = computed<SelectOption<Category|null|undefined>>({
   set(option) {
     category_selected.value = option.value
   }
-})
-
-const students = computed<Student[]>(() => {
-  const elements = Object.values(course_selected.value?.students ?? {})
-
-  elements.sort((a, b) => a.name.localeCompare(b.name))
-
-  return elements
 })
 
 async function search_course(name: string): Promise<SelectOption<Course|null|undefined>[]> {
@@ -317,18 +311,15 @@ watch(searcher_enabled, (value) => {
             <tr v-for="attendance in data?.attendances" :key="attendance.id">
               <td>{{ new Date(attendance.date_at).toLocaleDateString('es', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }}</td>
               <td>{{ attendance.name }}</td>
-              <td>{{ attendance.course?.name }}</td>
-              <td>{{ attendance.category?.name }}</td>
-              <template v-if="student_selected">
+              <td>{{ attendance.course_name }}</td>
+              <td>{{ attendance.category_name }}</td>
+              <td>{{ attendance.present_count }}</td>
+              <td>{{ attendance.late_count }}</td>
+              <td>{{ attendance.absent_count }}</td>
+              <td>{{ attendance.expelled_count }}</td>
+              <!-- <template v-if="student_selected">
                 <td :class="`status-${attendance.registers[student_selected.id]?.status.toLowerCase()}`">{{ attendance_register_status_locale(attendance.registers[student_selected.id]?.status) }}</td>
-              </template>
-              <template v-for="(names, i) in attendance.registers_names" :key="`${attendance.id}names${i}`">
-                <v-message v-if="names.length > 0" :is="'td'">
-                  <template #message>{{ names.join(', ') }}</template>
-                  <template #element>{{ names.length }}</template>
-                </v-message>
-                <td v-else>{{ names.length }}</td>
-              </template>
+              </template> -->
               <td class="actions">
                 <v-popup-menu>
                   <nuxt-link :to="`/attendances/${attendance.id}`"><v-icon-visibility /> Ver</nuxt-link>

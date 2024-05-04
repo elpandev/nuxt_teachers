@@ -1,5 +1,6 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
+import { code_id } from "~/elpandev/utils";
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
 import { SelectOption } from "~/src/presentation/models/select_option";
 
@@ -9,6 +10,7 @@ export enum CategoryTypeEnum {
 }
 
 export interface ICategory extends IBaseModel  {
+  id:          string
   type:        CategoryTypeEnum
   name:        string
   description: string
@@ -27,6 +29,7 @@ export const category_type_options: ISelectOption[] = Object.values(CategoryType
   .map(value => ({ key: value, name: category_type_locale(value), value }))
 
 export class Category extends BaseModel<ICategory> implements ICategory {
+  public id:             string = code_id('tEAFT4gbZi0JyNc6R5LVU8ma1vpICeKPlwhur3fMjz2dDXsxOYG9BqSoHWkQn7');
   public type: CategoryTypeEnum = CategoryTypeEnum.ATTENDANCE;
   public name:        string = '';
   public description: string = '';

@@ -57,7 +57,7 @@
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
 import { user_course_request, user_request } from '~/src/config/repositories';
 import { UserFilter } from '~/src/modules/user/domain/filter';
-import { User, user_role_locale } from '~/src/modules/user/domain/model';
+import { User, UserRoleEnum, user_role_locale } from '~/src/modules/user/domain/model';
 import { UserCourse } from '~/src/modules/user_course/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
@@ -79,7 +79,10 @@ function is_attached(user: User): boolean {
 }
 
 const { request: request_users } = useRequest(async () => {
-  const filter = new UserFilter({ order: { path: 'name', direction: OrderDirectionEnum.ASC } })
+  const filter = new UserFilter({
+    order: { path: 'name', direction: OrderDirectionEnum.ASC },
+    roles: [UserRoleEnum.TEACHER, UserRoleEnum.STUDENT]
+  })
 
   users.value =  await user_request.paginate(filter)
 })

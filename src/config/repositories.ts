@@ -36,6 +36,9 @@ import { FetchCourseRepository } from "../modules/course/infrastructure/fetch_re
 import { UserCourseRequestRepository } from "../modules/user_course/application/request_repository";
 import { FetchUserCourseRepository } from "../modules/user_course/infrastructure/fetch_repository";
 import { FetchAuthRepository } from "../modules/auth/infrastructure/fetch_repository";
+import { FetchAttendanceRepository } from "../modules/attendance/infrastructure/fetch_repository";
+import { FetchUserAttendanceRepository } from "../modules/user_attendance/infrastructure/fetch_repository";
+import { UserAttendanceRequestRepository } from "../modules/user_attendance/application/request_repository";
 
 export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
@@ -44,7 +47,8 @@ export const subscription_repository      = new FirestoreSubscriptionRepository(
 export const student_repository           = new FirestoreStudentRepository()
 export const course_repository            = new FetchCourseRepository()
 export const user_course_repository       = new FetchUserCourseRepository()
-export const attendance_repository        = new FirestoreAttendanceRepository()
+export const user_attendance_repository   = new FetchUserAttendanceRepository()
+export const attendance_repository        = new FetchAttendanceRepository()
 export const grade_repository             = new FirestoreGradeRepository()
 export const task_repository              = new FirestoreTaskRepository()
 export const question_repository          = new FirestoreQuestionRepository()
@@ -62,6 +66,7 @@ export const category_request          = new CategoryRequestRepository(category_
 export const subscription_request      = new SubscriptionRequestRepository(subscription_repository)
 export const course_request            = new CourseRequestRepository(course_repository)
 export const user_course_request       = new UserCourseRequestRepository(user_course_repository)
+export const user_attendance_request   = new UserAttendanceRequestRepository(user_attendance_repository)
 export const student_request           = new StudentRequestRepository(student_repository)
 export const attendance_request        = new AttendanceRequestRepository(attendance_repository)
 export const grade_request             = new GradeRequestRepository(grade_repository)

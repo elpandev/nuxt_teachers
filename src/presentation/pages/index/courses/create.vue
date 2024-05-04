@@ -19,7 +19,7 @@
 
       snackbar.value.success(`El curso "${data.value!.course!.name}" ha sido creado`)
 
-      router.push(`/courses/${data.value!.course!.id}`)
+      router.push(`/courses/${data.value!.course!.id}/users`)
     }
 
     catch (error) {
