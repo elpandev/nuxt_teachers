@@ -8,14 +8,12 @@ import { FirestoreScheduleRepository } from "../modules/schedule/infrastructure/
 import { ScheduleRequestRepository } from "../modules/schedule/aplication/request_repository";
 import { FirestoreStudentRepository } from "../modules/student/infrastructure/firestore_repository";
 import { CourseRequestRepository } from "../modules/course/aplication/request_repository";
-import { FirestoreAttendanceRepository } from "../modules/attendance/infrastructure/firestore_repository";
 import { FirestoreGradeRepository } from "../modules/grade/infrastructure/firestore_repository";
 import { FirestoreTaskRepository } from "../modules/task/infrastructure/firestore_repository";
 import { FirestoreQuestionRepository } from "../modules/question/infrastructure/firestore_repository";
 import { AuthRequestRepository } from "../modules/auth/aplication/request_repository";
 import { FirestoreSubscriptionRepository } from "../modules/subscription/infrastructure/firestore_repository";
 import { SubscriptionRequestRepository } from "../modules/subscription/aplication/request_repository";
-import { FirestoreCategoryRepository } from "../modules/category/infrastructure/firestore_repository";
 import { CategoryRequestRepository } from "../modules/category/aplication/request_repository";
 import { FirestoreGradeRegisterAggregateRepository } from "../modules/grade_register_aggregate/infrastructure/firestore_repository";
 import { GradeRegisterAggregateRequestRepository } from "../modules/grade_register_aggregate/aplication/request_repository";
@@ -39,10 +37,11 @@ import { FetchAuthRepository } from "../modules/auth/infrastructure/fetch_reposi
 import { FetchAttendanceRepository } from "../modules/attendance/infrastructure/fetch_repository";
 import { FetchUserAttendanceRepository } from "../modules/user_attendance/infrastructure/fetch_repository";
 import { UserAttendanceRequestRepository } from "../modules/user_attendance/application/request_repository";
+import { FetchCategoryRepository } from "../modules/category/infrastructure/fetch_repository";
 
 export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
-export const category_repository          = new FirestoreCategoryRepository()
+export const category_repository          = new FetchCategoryRepository()
 export const subscription_repository      = new FirestoreSubscriptionRepository()
 export const student_repository           = new FirestoreStudentRepository()
 export const course_repository            = new FetchCourseRepository()

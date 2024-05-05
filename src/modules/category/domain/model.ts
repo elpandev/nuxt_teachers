@@ -25,8 +25,8 @@ export function category_type_locale(type: CategoryTypeEnum): string {
   }
 }
 
-export const category_type_options: ISelectOption[] = Object.values(CategoryTypeEnum)
-  .map(value => ({ key: value, name: category_type_locale(value), value }))
+export const category_type_options: SelectOption[] = Object.values(CategoryTypeEnum)
+  .map(value => new SelectOption({ id: value, name: category_type_locale(value), value }))
 
 export class Category extends BaseModel<ICategory> implements ICategory {
   public id:             string = code_id('tEAFT4gbZi0JyNc6R5LVU8ma1vpICeKPlwhur3fMjz2dDXsxOYG9BqSoHWkQn7');
