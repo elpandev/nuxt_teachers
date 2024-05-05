@@ -10,6 +10,8 @@ interface IAttendanceFilter extends IBaseFilter {
   category?: Category|null
   student?:  Student
   student_status?: AttendanceRegisterStatusEnum
+  course_id?: string|null
+  category_id?: string|null
 }
 
 export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
@@ -18,6 +20,8 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
   public category?: Category|null
   public student?:  Student
   public student_status?: AttendanceRegisterStatusEnum
+  public course_id?: string|null
+  public category_id?: string|null
 
   constructor(data?: Partial<IAttendanceFilter>) {
     super(data)
@@ -32,6 +36,9 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
       if (this.category_enabled      (data.category))       this.category       = data.category
       if (this.student_enabled       (data.student))        this.student        = data.student
       if (this.student_status_enabled(data.student_status)) this.student_status = data.student_status
+      
+      data.course_id   !== undefined && (this.course_id   = data.course_id)
+      data.category_id !== undefined && (this.category_id = data.category_id)
     }
 
     return this
@@ -109,5 +116,14 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
     this.student_status = undefined
 
     this.fromPayload(data)
+  }
+
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    this.course_id   !== undefined && params.append('course_id',   `${this.course_id}`)
+    this.category_id !== undefined && params.append('category_id', `${this.category_id}`)
+
+    return params
   }
 }

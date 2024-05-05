@@ -6,7 +6,7 @@
         <button class="button download"><v-icon-download /> Descagar</button>
         <button class="button clone"><v-icon-duplicate /> Clonar</button>
         <nuxt-link class="button edit" :to="`/attendances/${data.attendance.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
-        <button class="button destroy" @click="destroy.request()"><v-icon-destroy /> Eliminar</button>
+        <button class="button destroy" @click="destroy()"><v-icon-destroy /> Eliminar</button>
       </div>
 
       <header class="container">
@@ -226,7 +226,7 @@ const { request: detach } = useRequest(async (user_id: string) => {
   data.value!.user_attendances = [...data.value!.user_attendances]
 })
 
-const destroy = useRequest(async () => {
+const { request: destroy } = useRequest(async () => {
   try {
     await attendance_request.destroy(data.value!.attendance!.id)
 

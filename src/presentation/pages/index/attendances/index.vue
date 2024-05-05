@@ -1,156 +1,5 @@
-<script setup lang="ts">
-import { category_request, course_request, attendance_request, user_request } from '~/src/config/repositories';
-import { AttendanceFilter } from '~/src/modules/attendance/domain/filter';
-import { Course } from '~/src/modules/course/domain/model';
-import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
-import { CategoryFilter } from '~/src/modules/category/domain/filter';
-import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
-import { useSnackbar } from '~/src/presentation/states/snackbar';
-import { CourseFilter } from '~/src/modules/course/domain/filter';
-import { AttendanceRegisterStatusEnum, attendance_register_status_locale } from '~/src/modules/attendance/domain/values/register';
-import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
-import type { IUser, User } from '~/src/modules/user/domain/model';
-import { UserFilter } from '~/src/modules/user/domain/filter';
-
-const snackbar          = useSnackbar()
-const name_selected     = ref<string>('')
-const course_selected   = ref<Course|null>()
-const user_selected     = ref<User>()
-const category_selected = ref<Category|null>()
-const filter            = reactive(new AttendanceFilter({ order: { path: 'date_at', direction: OrderDirectionEnum.DESC } }))
-const searcher_enabled  = ref<boolean>(false)
-const users             = ref<User[]>([])
-
-const course_option = computed<SelectOption<Course|null|undefined>>({
-  get() {
-    if (course_selected.value === undefined) return select_option_undefined
-    if (course_selected.value === null)      return select_option_null
-
-    return course_selected.value?.toSelectOption()
-  },
-  set(option) {
-    course_selected.value = option.value
-  }
-})
-
-const category_option = computed<SelectOption<Category|null|undefined>>({
-  get() {
-    if (category_selected.value === undefined) return select_option_undefined
-    if (category_selected.value === null)      return select_option_null
-
-    return category_selected.value?.toSelectOption()
-  },
-  set(option) {
-    category_selected.value = option.value
-  }
-})
-
-async function search_course(name: string): Promise<SelectOption<Course|null|undefined>[]> {
-  const data = await course_request.paginate(new CourseFilter({
-    name: name,
-    order: {
-      path: 'name',
-      direction: OrderDirectionEnum.ASC,
-    }
-  }))
-
-  return [
-    select_option_undefined,
-    select_option_null,
-    ...data.map(e => e.toSelectOption()),
-  ]
-}
-
-async function search_category(name: string): Promise<SelectOption<Category|null|undefined>[]> {
-  const data = await category_request.paginate(new CategoryFilter({
-    name: name,
-    type: CategoryTypeEnum.ATTENDANCE,
-    order: {
-      path: 'name',
-      direction: OrderDirectionEnum.ASC,
-    }
-  }))
-
-  return [
-    select_option_undefined,
-    select_option_null,
-    ...data.map(e => e.toSelectOption()),
-  ]
-}
-
-function restart_name_selected() {
-  name_selected.value = ''
-}
-
-function restart_course() {
-  course_selected .value = undefined
-  user_selected.value = undefined
-  course_option.value = new SelectOption({ id: 'undefined', name: '', value: undefined })
-}
-
-function restart_category_selected() {
-  category_selected .value = undefined
-}
-
-const search = useRequest(async () => {
-  const course   = course_selected  .value === null ? null : course_selected  .value
-  const category = category_selected.value === null ? null : category_selected.value
-
-  filter.name     = name_selected.value
-  filter.course   = course
-  filter.category = category
-
-  const [attendances, count] = await Promise.all([
-    attendance_request.paginate(filter),
-    attendance_request.count(filter),
-    request_users(),
-  ])
-
-  data.value!.attendances = attendances
-  data.value!.count  = count
-})
-
-const destroy = useRequest(async (attendance_id: string) => {
-  try {
-    await attendance_request.destroy(attendance_id)
-
-    data.value?.attendances.removeWhere(attendance => attendance.id == attendance_id)
-
-    snackbar.value.success(`La hoja de asistencia ha sido eliminada`)
-  }
-
-  catch (error) {
-    console.error(error)
-  }
-})
-
-const { request: request_users } = useRequest(async () => {
-  users.value = await user_request.paginate(new UserFilter({
-    course_id: course_selected.value?.id
-  }))
-
-  user_selected.value = users.value[0]
-})
-
-
-const { data, pending } = await useLazyAsyncData(async () => {
-  const [attendances, count] = await Promise.all([
-    attendance_request.paginate(filter),
-    attendance_request.count(filter),
-  ])
-
-  return { attendances, count }
-})
-
-watch(searcher_enabled, (value) => {
-  restart_name_selected()
-  restart_course()
-  restart_category_selected()
-})
-</script>
-
 <template>
-  <v-custom-header-primary :name="`Hojas de Asistencias (${ data?.count ?? 0 })`">
+  <v-custom-header-primary :name="`Hojas de Asistencias`">
     <template #buttons>
       <nuxt-link to="/attendances/create" class="button solid text teal">Nueva</nuxt-link>
     </template>
@@ -167,7 +16,7 @@ watch(searcher_enabled, (value) => {
       <div v-if="searcher_enabled" class="container page-filter">
         <v-input v-model="name_selected" :placeholder="'Nombre'" />
 
-        <button class="button solid text teal" @click="search.request()">Buscar</button>
+        <button class="button solid text teal" @click="search()">Buscar</button>
       </div>
 
       <div v-if="!searcher_enabled" class="container page-filter">
@@ -185,10 +34,10 @@ watch(searcher_enabled, (value) => {
           :restart="restart_category_selected"
         />
 
-        <button class="button solid text teal" @click="search.request()">Filtrar</button>
+        <button class="button solid text teal" @click="search()">Filtrar</button>
       </div>
 
-      <template v-if="filter.course && course_selected && filter.course.id == course_selected.id">
+      <template v-if="filter.course_id !== undefined && user_selected !== undefined">
         <div class="attendances-statistics">
           <section class="container users">
             <ul>
@@ -201,10 +50,10 @@ watch(searcher_enabled, (value) => {
           </section>
   
           <section class="container percents">
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="user_selected!.present_count"  :max="data.count" :average="course_selected!.present_count/users.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="user_selected!.late_count"     :max="data.count" :average="course_selected!.late_count/users.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="user_selected!.absent_count"   :max="data.count" :average="course_selected!.absent_count/users.length" />
-            <v-percent :class="`status-${AttendanceRegisterStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="user_selected!.expelled_count" :max="data.count" :average="course_selected!.expelled_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="user_selected!.present_count"  :max="course_selected!.attendances_count" :average="course_selected!.present_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="user_selected!.late_count"     :max="course_selected!.attendances_count" :average="course_selected!.late_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="user_selected!.absent_count"   :max="course_selected!.attendances_count" :average="course_selected!.absent_count/users.length" />
+            <v-percent :class="`status-${AttendanceRegisterStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="user_selected!.expelled_count" :max="course_selected!.attendances_count" :average="course_selected!.expelled_count/users.length" />
           </section>
         </div>
       </template>
@@ -272,7 +121,7 @@ watch(searcher_enabled, (value) => {
                 <v-popup-menu>
                   <nuxt-link :to="`/attendances/${attendance.id}`"><v-icon-visibility /> Ver</nuxt-link>
                   <nuxt-link :to="`/attendances/${attendance.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
-                  <button @click="destroy.request(attendance.id)"><v-icon-destroy /> Eliminar</button>
+                  <button @click="destroy(attendance.id)"><v-icon-destroy /> Eliminar</button>
                 </v-popup-menu>
               </td>
             </tr>
@@ -283,6 +132,147 @@ watch(searcher_enabled, (value) => {
   </main>
   <v-loader v-else />
 </template>
+
+<script setup lang="ts">
+import { category_request, course_request, attendance_request, user_request } from '~/src/config/repositories';
+import { AttendanceFilter } from '~/src/modules/attendance/domain/filter';
+import { Course } from '~/src/modules/course/domain/model';
+import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
+import { CategoryFilter } from '~/src/modules/category/domain/filter';
+import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
+import { useSnackbar } from '~/src/presentation/states/snackbar';
+import { CourseFilter } from '~/src/modules/course/domain/filter';
+import { AttendanceRegisterStatusEnum, attendance_register_status_locale } from '~/src/modules/attendance/domain/values/register';
+import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
+import type { IUser, User } from '~/src/modules/user/domain/model';
+import { UserFilter } from '~/src/modules/user/domain/filter';
+
+const snackbar          = useSnackbar()
+const name_selected     = ref<string>('')
+const course_selected   = ref<Course|null>()
+const user_selected     = ref<User>()
+const category_selected = ref<Category|null>()
+const filter            = reactive(new AttendanceFilter({ order: { path: 'date_at', direction: OrderDirectionEnum.DESC } }))
+const searcher_enabled  = ref<boolean>(false)
+const users             = ref<User[]>([])
+
+const course_option = computed<SelectOption<Course|null|undefined>>({
+  get() {
+    if (course_selected.value === undefined) return select_option_undefined
+    if (course_selected.value === null)      return select_option_null
+
+    return course_selected.value?.toSelectOption()
+  },
+  set(option) {
+    filter.course_id = option.value?.id
+    course_selected.value = option.value
+  }
+})
+
+const category_option = computed<SelectOption<Category|null|undefined>>({
+  get() {
+    if (category_selected.value === undefined) return select_option_undefined
+    if (category_selected.value === null)      return select_option_null
+
+    return category_selected.value?.toSelectOption()
+  },
+  set(option) {
+    category_selected.value = option.value
+  }
+})
+
+async function search_course(name: string): Promise<SelectOption<Course|null|undefined>[]> {
+  const data = await course_request.paginate(new CourseFilter({
+    name: name,
+    order: {
+      path: 'name',
+      direction: OrderDirectionEnum.ASC,
+    }
+  }))
+
+  return [
+    select_option_undefined,
+    select_option_null,
+    ...data.map(e => e.toSelectOption()),
+  ]
+}
+
+async function search_category(name: string): Promise<SelectOption<Category|null|undefined>[]> {
+  const data = await category_request.paginate(new CategoryFilter({
+    name: name,
+    type: CategoryTypeEnum.ATTENDANCE,
+    order: {
+      path: 'name',
+      direction: OrderDirectionEnum.ASC,
+    }
+  }))
+
+  return [
+    select_option_undefined,
+    select_option_null,
+    ...data.map(e => e.toSelectOption()),
+  ]
+}
+
+function restart_name_selected() {
+  name_selected.value = ''
+}
+
+function restart_course() {
+  course_selected .value = undefined
+  user_selected.value = undefined
+  course_option.value = new SelectOption({ id: 'undefined', name: '', value: undefined })
+}
+
+function restart_category_selected() {
+  category_selected .value = undefined
+}
+
+const { request: search } = useRequest(async () => {
+  const [attendances] = await Promise.all([
+    attendance_request.paginate(filter),
+    request_users(),
+  ])
+
+  data.value!.attendances = attendances
+})
+
+const { request: destroy } = useRequest(async (attendance_id: string) => {
+  try {
+    await attendance_request.destroy(attendance_id)
+
+    data.value?.attendances.removeWhere(attendance => attendance.id == attendance_id)
+
+    snackbar.value.success(`La hoja de asistencia ha sido eliminada`)
+  }
+
+  catch (error) {
+    console.error(error)
+  }
+})
+
+const { request: request_users } = useRequest(async () => {
+  users.value = await user_request.paginate(new UserFilter({
+    course_id: course_selected.value?.id
+  }))
+
+  user_selected.value = users.value[0]
+})
+
+const { data, pending } = await useLazyAsyncData(async () => {
+  const [attendances] = await Promise.all([
+    attendance_request.paginate(filter),
+  ])
+
+  return { attendances }
+})
+
+watch(searcher_enabled, (value) => {
+  restart_name_selected()
+  restart_course()
+  restart_category_selected()
+})
+</script>
 
 <style lang="scss">
 .attendances-statistics {
