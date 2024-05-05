@@ -23,12 +23,12 @@ const destroy = useRequest(async (course_id: string) => {
 })
 
 async function request_data() {
-  const [courses, count] = await Promise.all([
+  const [courses] = await Promise.all([
     course_request.paginate  (filter),
-    course_request.count(filter),
+    // course_request.count(filter),
   ])
 
-  return { courses, count }
+  return { courses, count: 0 }
 }
 
 async function search_by_input() {

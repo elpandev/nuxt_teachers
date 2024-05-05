@@ -16,6 +16,7 @@ export const user_attendace_status_locale: Record<UserAttendanceStatusEnum, stri
 }
 
 export interface IUserAttendance extends IBaseModel {
+  id:            string
   user_id:       string
   user_name:     string
   attendance_id: string
@@ -77,6 +78,7 @@ export class UserAttendance extends BaseModel<IUserAttendance> {
 
   public toPayload(): Partial<IUserAttendance> {
     return {
+      id:            this.id,
       user_id:       this.user_id,
       user_name:     this.user_name,
       attendance_id: this.attendance_id,

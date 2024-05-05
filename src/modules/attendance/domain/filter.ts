@@ -3,6 +3,7 @@ import type { Course } from "../../course/domain/model";
 import type { Student } from "../../student/domain/model";
 import type { Category } from "../../category/domain/model";
 import type { AttendanceRegisterStatusEnum } from "./values/register";
+import type { UserAttendanceStatusEnum } from "../../user_attendance/domain/model";
 
 interface IAttendanceFilter extends IBaseFilter {
   name?:     string
@@ -12,6 +13,7 @@ interface IAttendanceFilter extends IBaseFilter {
   student_status?: AttendanceRegisterStatusEnum
   course_id?: string|null
   category_id?: string|null
+  status?: UserAttendanceStatusEnum[]
 }
 
 export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
@@ -22,6 +24,7 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
   public student_status?: AttendanceRegisterStatusEnum
   public course_id?: string|null
   public category_id?: string|null
+  public status?: UserAttendanceStatusEnum[]
 
   constructor(data?: Partial<IAttendanceFilter>) {
     super(data)
@@ -36,6 +39,10 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
       if (this.category_enabled      (data.category))       this.category       = data.category
       if (this.student_enabled       (data.student))        this.student        = data.student
       if (this.student_status_enabled(data.student_status)) this.student_status = data.student_status
+
+      if (data.status) {
+        this.status = data.status
+      }
       
       data.course_id   !== undefined && (this.course_id   = data.course_id)
       data.category_id !== undefined && (this.category_id = data.category_id)
@@ -99,12 +106,16 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
   public student_enabled       (value: Student |undefined):                     boolean { return value !== undefined && value !== null }
   public student_status_enabled(value: AttendanceRegisterStatusEnum|undefined): boolean { return value !== undefined && value !== null }
 
+  public validate_name       (value?: string|null):                boolean { return (typeof value == 'string' && value.length > 0) }
+  public validate_course_id  (value?: string|null):                boolean { return (typeof value == 'string' && value.length > 0) || value === null }
+  public validate_category_id(value?: string|null):                boolean { return (typeof value == 'string' && value.length > 0) || value === null }
+  public validate_status     (value?: UserAttendanceStatusEnum[]): boolean { return Array.isArray(value) }
+
   public enabled(): boolean {
     return (
-      this.course_enabled        (this.course) ||
-      this.category_enabled      (this.category) ||
-      this.student_enabled       (this.student) ||
-      this.student_status_enabled(this.student_status)
+      this.validate_course_id   (this.course_id) ||
+      this.validate_category_id (this.category_id) ||
+      this.validate_status      (this.status)
     )
   }
 
@@ -121,8 +132,13 @@ export class AttendanceFilter extends BaseFilter implements IAttendanceFilter {
   public toParams(): URLSearchParams {
     const params = super.toParams()
 
-    this.course_id   !== undefined && params.append('course_id',   `${this.course_id}`)
-    this.category_id !== undefined && params.append('category_id', `${this.category_id}`)
+    this.validate_name       (this.name)        && params.append('name',        `${this.name}`)
+    this.validate_course_id  (this.course_id)   && params.append('course_id',   `${this.course_id}`)
+    this.validate_category_id(this.category_id) && params.append('category_id', `${this.category_id}`)
+    
+    if (this.validate_status(this.status)) {
+      for (const status of this.status!) params.append('status[]', status)
+    }
 
     return params
   }

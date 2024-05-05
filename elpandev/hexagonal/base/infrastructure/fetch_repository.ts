@@ -50,8 +50,15 @@ export abstract class BaseFetchModelRepository<T extends BaseModel, U extends IB
     return data.results.map((e: any) => this.fromPayload(e))
   }
 
-  public async count(filter?: BaseFilter): Promise<number> {
-    return 1
+  public async count(filter?: BaseFilter): Promise<Record<string, number>> {
+    const response = await fetch(`${this.reference()}/count?${filter?.toParams()}`, { method: 'GET' })
+    const data     = await response.json() as any
+
+    if (Array.isArray(data)) {
+      return data.reduce((elements, value) => Object.assign(elements, value.results[0]), {})
+    }
+
+    return data.results[0].count
   }
 
   public async sum(path: string, filter?: BaseFilter): Promise<number> {
