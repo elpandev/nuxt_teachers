@@ -282,6 +282,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
   const [attendance, user_attendances] = await Promise.all([
     attendance_request.get(attendance_id),
     user_attendance_request.paginate(new UserAttendanceFilter({
+      attendance_id,
       order: { path: 'user_name', direction: OrderDirectionEnum.ASC }
     }))
   ])

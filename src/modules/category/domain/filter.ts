@@ -35,6 +35,14 @@ export class CategoryFilter extends BaseFilter implements ICategoryFilter {
     return queries
   }
 
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    this.type && params.append('type', this.type)
+    this.name && params.append('name', this.name)
+
+    return params
+  }
   
   public get enabled(): boolean {
     return (

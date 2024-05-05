@@ -8,7 +8,7 @@ import { Course } from '~/src/modules/course/domain/model';
 import type { ISelectOption } from '~/src/presentation/interfaces/select_option';
 import { CourseFilter } from '~/src/modules/course/domain/filter';
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
-import type { Category } from '~/src/modules/category/domain/model';
+import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
 import { CategoryFilter } from '~/src/modules/category/domain/filter';
 import { SelectOption } from '~/src/presentation/models/select_option';
 
@@ -18,7 +18,21 @@ const validator = ref<Validator>(new Validator({ payload: {}, rules: {} }))
 const snackbar  = useSnackbar()
 const router    = useRouter()
 
-//#region course
+const course_option = computed<SelectOption<Course>>({
+  get() { return data.value!.attendance!.course_select_option() },
+  set(value: SelectOption<Course>) {
+    data.value!.attendance!.course_id   = value.id
+    data.value!.attendance!.course_name = value.name
+  }
+})
+
+const category_option = computed<SelectOption<Category>>({
+  get() { return data.value!.attendance!.category_select_option() },
+  set(value: SelectOption<Category>) {
+    data.value!.attendance!.category_id   = value.id
+    data.value!.attendance!.category_name = value.name
+  }
+})
 
 async function search_course(name: string): Promise<SelectOption<Course>[]> {
   const data = await course_request.paginate(new CourseFilter({
@@ -32,14 +46,10 @@ async function search_course(name: string): Promise<SelectOption<Course>[]> {
   return data.map(e => e.toSelectOption())
 }
 
-function on_select_course(option: SelectOption<Course>) {
-  data.value!.attendance!.course_id   = option.value.id
-  data.value!.attendance!.course_name = option.value.name
-}
-
 async function search_category(name: string): Promise<SelectOption<Category>[]> {
   const data = await category_request.paginate(new CategoryFilter({
     name: name,
+    type: CategoryTypeEnum.ATTENDANCE,
     order: {
       path: 'name',
       direction: OrderDirectionEnum.ASC,
@@ -48,8 +58,6 @@ async function search_category(name: string): Promise<SelectOption<Category>[]> 
 
   return data.map(e => e.toSelectOption())
 }
-
-//#endregion
 
 const store = useRequest(async () => {
   try {
@@ -87,24 +95,22 @@ useSeoMeta({ title })
       <form class="form" @submit.prevent="store.request()">
         <template v-if="!data.attendance.exists">
           <v-selector
-            :model-value="data.attendance.course_select_option()"
+            v-model="course_option"
             :label   = "'Curso'"
             :request = "search_course"
-            @update:model-value="on_select_course"
           />
         </template>
 
-        <!-- <v-selector
-          :model-value="data.attendance.category?.toSelectOption() ?? new SelectOption({ name: '', value: null })"
-          :label   = "'Category'"
+        <v-selector
+          v-model="category_option"
+          :label   = "'Categoría'"
           :request = "search_category"
-          @update:model-value="(value: any) => data!.attendance!.category = value"
-        /> -->
+        />
 
         <v-input v-model="data.attendance.name"        :label="'Nombre'" />
         <v-input v-model="data.attendance.description" :label="'Descripción'" />
 
-        <v-form-input-date-time v-model="data.attendance.date_at" :label="'Fecha'" />
+        <!-- <v-form-input-date-time v-model="data.attendance.date_at" :label="'Fecha'" /> -->
 
         <v-loader v-if="store.pending.value" />
         <button v-else class="button outline text teal" type="submit">Guardar</button>
