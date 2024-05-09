@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in data?.users" :key="user.id">
+        <tr v-for="user in users" :key="user.id">
           <td>{{ user.id }}</td>
           <td>{{ user_role_locale(user.role) }}</td>
           <td>{{ user.name }}</td>
@@ -32,7 +32,7 @@
   <Teleport :to="'#__nuxt'">
     <v-modal v-if="modal_enabled" class="user-course-attach-modal" @closed="modal_enabled = false">
       <ol>
-        <li v-for="user in users" :key="`user-${user.id}`">
+        <li v-for="user in modal_users" :key="`user-${user.id}`">
           <span class="role">{{ user_role_locale(user.role) }}</span>
           <span class="name">{{ user.name }}</span>
 
@@ -61,30 +61,33 @@ import { User, UserRoleEnum, user_role_locale } from '~/src/modules/user/domain/
 import { UserCourse } from '~/src/modules/user_course/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
-const snackbar  = useSnackbar()
-const route     = useRoute()
-const course_id = route.params.course_id as string
-const users     = ref<User[]>([])
+const snackbar    = useSnackbar()
+const route       = useRoute()
+const course_id   = route.params.course_id as string
+const users       = ref<User[]>([])
+const users_count = ref<number>(0)
+const modal_users = ref<User[]>([])
+const filter      = new UserFilter({ course_id, order: { path: 'name', direction: OrderDirectionEnum.ASC } })
 
 const { enabled: modal_enabled } = useModal()
 
 function show_attach_modal() {
-  request_users()
+  request_modal_users()
 
   modal_enabled.value = true
 }
 
 function is_attached(user: User): boolean {
-  return data.value!.users.some(e => e.id == user.id)
+  return users.value.some(e => e.id == user.id)
 }
 
-const { request: request_users } = useRequest(async () => {
+const { request: request_modal_users } = useRequest(async () => {
   const filter = new UserFilter({
     order: { path: 'name', direction: OrderDirectionEnum.ASC },
     roles: [UserRoleEnum.TEACHER, UserRoleEnum.STUDENT]
   })
 
-  users.value =  await user_request.paginate(filter)
+  modal_users.value =  await user_request.paginate(filter)
 })
 
 const { request: attach } = useRequest(async (user: User) => {
@@ -92,7 +95,7 @@ const { request: attach } = useRequest(async (user: User) => {
 
   await user_course_request.store(user_course)
 
-  data.value!.users = [...data.value!.users, user]
+  users.value = [...users.value, user]
 })
 
 const { request: detach } = useRequest(async (user: User) => {
@@ -100,20 +103,23 @@ const { request: detach } = useRequest(async (user: User) => {
 
   await user_course_request.destroy(user_course.id)
 
-  data.value!.users.removeWhere(e => e.id == user.id)
-
-  data.value!.users = [...data.value!.users]
+  users.value.removeWhere(e => e.id == user.id)
+  users.value = [...users.value]
 })
 
-const { data } = await useLazyAsyncData(async () => {
-  const filter = new UserFilter({ course_id, order: { path: 'name', direction: OrderDirectionEnum.ASC } })
+const { request: request_users } = useRequest(async () => {
+  users.value = await user_request.paginate(filter)
+})
 
-  const [users, count] = await Promise.all([
-    user_request.paginate  (filter),
-    user_request.count(filter),
+const { request: request_users_count } = useRequest(async () => {
+  users_count.value = await user_request.count(filter) as number
+})
+
+await useLazyAsyncData(async () => {
+  await Promise.all([
+    request_users(),
+    request_users_count(),
   ])
-
-  return { users, count }
 })
 </script>
 

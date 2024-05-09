@@ -1,16 +1,12 @@
-function generateCombinations(strings) {
-  const combinations = [];
-  const generate = (prefix, array) => {
-      for (let i = 0; i < array.length; i++) {
-          combinations.push(prefix.concat(array[i]));
-          generate(prefix.concat(array[i]), array.slice(i + 1));
-      }
-  }
-  generate([], strings);
-  return combinations;
+const days = 365
+const percent = 0.055/365
+
+let initial = 10000
+
+console.log(initial * percent)
+
+for (let index = 0; index < days; index++) {
+  initial += initial * percent
 }
 
-// Example usage:
-const strings = ["apple", "banana", "orange", "coconut"];
-const combinations = generateCombinations(strings);
-console.log(combinations);
+console.log(initial)

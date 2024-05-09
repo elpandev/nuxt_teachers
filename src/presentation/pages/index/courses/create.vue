@@ -14,7 +14,7 @@
   const store = useRequest(async () => {
     try {
       props.course_id
-        ? await course_request.update(props.course_id, data.value!.course!)
+        ? await course_request.update(props.course_id, data.value!.course!.toPayload())
         : await course_request.store(data.value!.course!)
 
       snackbar.value.success(`El curso "${data.value!.course!.name}" ha sido creado`)

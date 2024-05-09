@@ -1,7 +1,7 @@
 <template>
   <main v-if="!pending" class="documents">
     <header>
-      <h1>{{ data?.count }} Usuarios</h1>
+      <h1>{{ users_count }} Usuarios</h1>
       <NuxtLink to="users/create" class="button teal">Nuevo Usuario</NuxtLink>
     </header>
     <div class="table-container">
@@ -16,7 +16,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in data?.users" :key="user.id">
+          <tr v-for="user in users" :key="user.id">
             <td>{{ user_role_locale(user.role) }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
@@ -25,7 +25,7 @@
               <v-popup-menu>
                 <nuxt-link :to="`/users/${user.id}`"><v-icon-visibility /> Ver</nuxt-link>
                 <nuxt-link :to="`/users/${user.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
-                <button @click="destroy.request(user.id)"><v-icon-destroy /> Eliminar</button>
+                <button @click="destroy(user.id)"><v-icon-destroy /> Eliminar</button>
               </v-popup-menu>
             </td>
           </tr>
@@ -39,16 +39,19 @@
 <script setup lang="ts">
 import { user_request } from '~/src/config/repositories';
 import { UserFilter } from '~/src/modules/user/domain/filter';
-import { user_role_locale } from '~/src/modules/user/domain/model';
+import { User, user_role_locale } from '~/src/modules/user/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
-const snackbar = useSnackbar()
+const snackbar    = useSnackbar()
+const filter      = new UserFilter()
+const users       = ref<User[]>([])
+const users_count = ref<number>(0)
 
-const destroy = useRequest(async (user_id: string) => {
+const { request: destroy } = useRequest(async (user_id: string) => {
   try {
     await user_request.destroy(user_id)
 
-    data.value?.users.removeWhere(user => user.id == user_id)
+    users.value.removeWhere(user => user.id == user_id)
 
     snackbar.value.success(`El usuario ha sido eliminado`)
   }
@@ -58,14 +61,18 @@ const destroy = useRequest(async (user_id: string) => {
   }
 })
 
+const { request: request_users } = useRequest(async () => {
+  users.value = await user_request.paginate(filter)
+})
+
+const { request: request_users_count } = useRequest(async () => {
+  users_count.value = await user_request.count(filter) as number
+})
+
 const { data, pending } = await useLazyAsyncData(async () => {
-  const filter = new UserFilter()
-
-  const [users, count] = await Promise.all([
-    user_request.paginate  (filter),
-    user_request.count(filter),
+  await Promise.all([
+    request_users(),
+    request_users_count(),
   ])
-
-  return { users, count }
 })
 </script>

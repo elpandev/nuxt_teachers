@@ -25,12 +25,12 @@ const destroy = useRequest(async (category_id: string) => {
 })
 
 async function request_data() {
-  const [categories, count] = await Promise.all([
+  const [categories] = await Promise.all([
     category_request.paginate(filter),
-    category_request.count   (filter),
+    // category_request.count   (filter),
   ])
 
-  return { categories, count }
+  return { categories, count: 0 }
 }
 
 async function search_by_input() {

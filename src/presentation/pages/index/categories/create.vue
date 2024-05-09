@@ -19,7 +19,9 @@ const category_type_option = computed<SelectOption<CategoryTypeEnum>>({
 
 const store = useRequest(async () => {
   try {
-    await category_request.store(data.value!.category!)
+    props.category_id === undefined
+      ? await category_request.store (data.value!.category!)
+      : await category_request.update(props.category_id, data.value!.category!)
 
     snackbar.value.success(`La categoría "${data.value!.category!.name}" ha sido creada`)
 
@@ -50,7 +52,9 @@ useSeoMeta({ title })
   <main v-if="!pending" class="create">
     <template v-if="data?.category">
       <form class="form" @submit.prevent="store.request()">
-        <v-selector v-model="category_type_option" :label="'Tipo'" :options="category_type_options" />
+        <template v-if="$props.category_id === undefined">
+          <v-selector v-model="category_type_option" :label="'Tipo'" :options="category_type_options" />
+        </template>
 
         <v-form-input v-model="data.category.name"        :label="'Nombre'" />
         <v-form-input v-model="data.category.description" :label="'Descripción'" />
