@@ -26,7 +26,7 @@ const { pending } = await useLazyAsyncData(async () => {
   ])
 
   tasks.value = _tasks
-  count.value = _count
+  count.value = _count as number
 })
 </script>
 

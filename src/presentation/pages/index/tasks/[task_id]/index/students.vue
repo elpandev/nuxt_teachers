@@ -8,7 +8,6 @@ import { nano_id } from '~/elpandev/utils';
 
 const attrs  = useAttrs()
 const task   = attrs.task as Task
-const points = attrs.points as number
 const modal  = useModal()
 
 async function request_students() {
@@ -62,7 +61,7 @@ const { data, pending } = await useLazyAsyncData(nano_id(), async () => {
           <td>{{ student_task.student.id }}</td>
           <td>{{ student_task.student.name }}</td>
           <td>{{ student_task.password }}</td>
-          <td>{{ student_task.points.toBase(task.base_score, points).toFixed(2) }}</td>
+          <td>{{ student_task.points.toFixed(2) }}</td>
           <td>{{ student_task.status }}</td>
           <td class="actions">
             <nuxt-link :to="`/tasks/${student_task.task.id}/questions?student_id=${student_task.student.id}`">ver</nuxt-link>

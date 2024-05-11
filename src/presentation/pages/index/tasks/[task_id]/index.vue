@@ -1,35 +1,35 @@
 <script setup lang="ts">
 import { question_request, task_request } from '~/src/config/repositories';
 import { QuestionFilter } from '~/src/modules/question/domain/filter';
+import { Task } from '~/src/modules/task/domain/model';
 
 const route   = useRoute()
 const task_id = route.params.task_id as string
+const task    = ref<Task>(new Task())
+
+const { request: request_task } = useRequest(async () => {
+  task.value = await task_request.get(task_id) ?? new Task()
+})
 
 const { data, pending } = await useLazyAsyncData(async () => {
-  const [task, questions, points] = await Promise.all([
-    task_request    .get(task_id),
-    question_request.paginate(new QuestionFilter({ task_id })),
-    question_request.sum(`points`)
-  ])
-
-  return { task, questions, points }
+  await request_task()
 })
 </script>
 
 <template>
   <main v-if="!pending" class="document">
-    <template v-if="data?.task">
+    <template v-if="task.exists">
       <div class="buttons">
         <button class="button share"><v-icon-link /> Compartir</button>
         <button class="button download"><v-icon-download /> Descagar</button>
         <button class="button clone"><v-icon-duplicate /> Clonar</button>
-        <nuxt-link class="button edit" :to="`/tasks/${data.task.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
+        <nuxt-link class="button edit" :to="`/tasks/${task.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
         <button class="button destroy"><v-icon-destroy /> Eliminar</button>
       </div>
 
       <header class="container">
-        <h1>{{ data.task.name }}</h1>
-        <p>{{ data.task.description }}</p>
+        <h1>{{ task.name }}</h1>
+        <p>{{ task.description }}</p>
       </header>
 
       <div class="information-statistic">
@@ -38,9 +38,8 @@ const { data, pending } = await useLazyAsyncData(async () => {
             <h3>Información</h3>
           </header>
           <ul>
-            <li><b>Calificación:</b> <span>{{ data.task.base_score }}</span></li>
-            <li><b>Preguntas:</b> <span>{{ data.questions.length }}</span></li>
-            <li><b>Puntos:</b> <span>{{ data.task.calculate_points(data.questions) }}</span></li>
+            <li><b>Preguntas:</b> <span>{{ task.questions_count }}</span></li>
+            <!-- <li><b>Puntos:</b> <span>{{ task.calculate_points(data.questions) }}</span></li> -->
           </ul>
         </section>
 
@@ -51,7 +50,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
           <ul>
             <li>
               <span class="value">{{ 1 }}</span>
-              <nuxt-link class="name" :to="`/tasks/${data.task.id}/responses`">Tareas Resueltas</nuxt-link>
+              <nuxt-link class="name" :to="`/tasks/${task.id}/responses`">Tareas Resueltas</nuxt-link>
             </li>
             <li>
               <span class="value">{{ 1 }}</span>
@@ -59,15 +58,15 @@ const { data, pending } = await useLazyAsyncData(async () => {
             </li>
             <li>
               <span class="value">{{ 1 }}</span>
-              <nuxt-link class="name" :to="`/tasks/${data.task.id}/responses/${1}`">Mejor Calificación</nuxt-link>
+              <nuxt-link class="name" :to="`/tasks/${task.id}/responses/${1}`">Mejor Calificación</nuxt-link>
             </li>
             <li>
               <span class="value">{{ 1 }}</span>
-              <nuxt-link class="name" :to="`/tasks/${data.task.id}/responses/${1}`">Peor Calificación</nuxt-link>
+              <nuxt-link class="name" :to="`/tasks/${task.id}/responses/${1}`">Peor Calificación</nuxt-link>
             </li>
           </ul>
           <footer>
-            <span><nuxt-link :to="`/tasks/${data.task.id}/questions?user_id=${1}`">{{ 1 }}</nuxt-link> ha obtenido la mejor calificación</span>
+            <span><nuxt-link :to="`/tasks/${task.id}/questions?user_id=${1}`">{{ 1 }}</nuxt-link> ha obtenido la mejor calificación</span>
           </footer>
         </section>
       </div>
@@ -77,7 +76,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
         <nuxt-link :to="`/tasks/${task_id}/questions`">Preguntas</nuxt-link>
       </nav>
 
-      <nuxt-page v-if="data?.task" :task="data.task" :points="data.points" />
+      <nuxt-page v-if="task.exists" :task="task" />
     </template>
     <span v-else>Esta Tarea no existe</span>
   </main>
