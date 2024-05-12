@@ -4,7 +4,7 @@ import type { IUserCourseRepository } from "../domain/repository";
 import { BaseFetchModelRepository } from "~/elpandev/hexagonal/base/infrastructure/fetch_repository";
 
 export class FetchUserCourseRepository extends BaseFetchModelRepository<UserCourse, IUserCourse> implements IUserCourseRepository {
-  public reference() { return `${BACKEND_URL[ENV]}/user_course` }
+  public reference() { return `${BACKEND_URL[ENV]}/user_courses` }
 
   public fromPayload(data: any): UserCourse {
     const model = new UserCourse(data)
