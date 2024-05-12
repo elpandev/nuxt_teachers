@@ -91,9 +91,3 @@ const { request: search } = useRequest(async () => {
 
 onMounted(search)
 </script>
-
-<style lang="scss">
-.table-users-container {
-  padding: 15px 18px;
-}
-</style>

@@ -125,7 +125,6 @@ await useLazyAsyncData(async () => {
 <style lang="scss">
 .user-course-attach-modal {
   .container {
-    padding: 18px;
     ol {
       display: grid;
       gap: 4px;

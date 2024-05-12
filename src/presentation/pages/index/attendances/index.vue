@@ -320,7 +320,6 @@ watch(searcher_enabled, (value) => {
   }
 }
 .attendances-table {
-  padding: 15px 18px;
   td {
     &.status-present {
       color: $color_status_present;
