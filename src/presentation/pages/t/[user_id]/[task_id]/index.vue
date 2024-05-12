@@ -1,13 +1,13 @@
-<script setup lang="ts">
-import { question_request, student_task_request, task_request, student_question_request } from '~/src/config/repositories';
+<!-- <script setup lang="ts">
+import { question_request, user_task_request, task_request, student_question_request } from '~/src/config/repositories';
 import { QuestionFilter } from '~/src/modules/question/domain/filter';
 import { StudentQuestionFilter } from '~/src/modules/student_question/domain/filter';
 import type { Question } from '~/src/modules/question/domain/model';
 import { StudentQuestion } from '~/src/modules/student_question/domain/model';
-import { StudentTask, StudentTaskStatusEnum } from '~/src/modules/student_task/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { nano_id } from '~/elpandev/utils';
 import { useAuthState } from '~/src/presentation/states/auth';
+import type { UserTask } from '~/src/modules/student_task/domain/model';
 
 enum PageEnum {
   INTRO     = 'INTRO',
@@ -22,24 +22,24 @@ const task_id           = route.params.task_id as string
 const student_id        = ref<string>('')
 const snackbar          = useSnackbar()
 const page              = ref<PageEnum>(PageEnum.STUDENT)
-const student_task      = ref<StudentTask>()
+const user_task         = ref<UserTask>()
 const questions         = ref<Map<string, Question>>(new Map())
 const student_questions = ref<Map<string, StudentQuestion>>(new Map())
 const auth              = useAuthState()
 
 const start = useRequest(async () => {
-  student_task.value = await student_task_request.get(`${student_id.value}_${task_id}`)
+  user_task.value = await user_task_request.get(`${student_id.value}_${task_id}`)
 
-  if (student_task.value === undefined) {
+  if (user_task.value === undefined) {
     return snackbar.value.error('El estudiante no ha sido registrado para este exámen')
   }
 
-  if (student_task.value.is_completed) {
+  if (user_task.value.is_completed) {
     return snackbar.value.error('El estudiante ya ha completado este exámen')
   }
 
-  if (student_task.value.is_pending) {
-    await student_task_request.update(`${student_id.value}_${task_id}`, { status: StudentTaskStatusEnum.STARTED })
+  if (user_task.value.is_pending) {
+    await user_task_request.update(`${student_id.value}_${task_id}`, { status: UserTaskStatusEnun.STARTED })
   }
 
   const [_questions, _student_questions] = await Promise.all([
@@ -70,7 +70,7 @@ const start = useRequest(async () => {
 })
 
 const complete = useRequest(async () => {
-  await student_task_request.update(`${student_id.value}_${task_id}`, { status: StudentTaskStatusEnum.COMPLETED })
+  await user_task_request.update(`${student_id.value}_${task_id}`, { status: UserTaskStatusEnum.COMPLETED })
 
   page.value = PageEnum.COMPLETED
 })
@@ -127,4 +127,6 @@ const { data, pending } = await useLazyAsyncData(nano_id(), async () => {
     <span v-else>Esta Tarea no existe</span>
   </main>
   <v-loader v-else />
-</template>
+</template> -->
+
+<template></template>

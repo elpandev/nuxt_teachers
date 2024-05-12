@@ -1,17 +1,17 @@
 import { BaseFactory } from "~/elpandev/hexagonal/base/domain/factory";
-import { StudentTask } from "./model";
+import { UserTask } from "./model";
 import { faker } from "@faker-js/faker";
 import { nano_id } from "~/elpandev/utils";
 
-export class StudentTaskFactory extends BaseFactory<StudentTask> {
-  public generate(): StudentTask {
-    const student_task = new StudentTask()
+export class UserTaskFactory extends BaseFactory<UserTask> {
+  public generate(): UserTask {
+    const user_task = new UserTask()
 
-    student_task.start_at = faker.date.between({ from: new Date().toISOString(),                   to: new Date().addMinutes(60).toISOString() }).getTime()
-    student_task.end_at   = faker.date.between({ from: new Date(student_task.start_at).toISOString(), to: new Date(student_task.start_at).addMinutes(60).toISOString() }).getTime()
-    student_task.password = nano_id()
-    student_task.points   = faker.number.int({ min: 0, max: 10 })
+    user_task.start_at = faker.date.between({ from: new Date().toISOString(),                   to: new Date().addMinutes(60).toISOString() }).getTime()
+    user_task.end_at   = faker.date.between({ from: new Date(user_task.start_at).toISOString(), to: new Date(user_task.start_at).addMinutes(60).toISOString() }).getTime()
+    user_task.password = nano_id()
+    user_task.points   = faker.number.int({ min: 0, max: 10 })
 
-    return student_task
+    return user_task
   }
 }

@@ -1,13 +1,13 @@
 import { BaseFilter, type IBaseFilter } from "~/elpandev/hexagonal/base/domain/filter";
 
-interface IStudentTaskFilter extends IBaseFilter {
+interface IUserTaskFilter extends IBaseFilter {
   task_id?: string
 }
 
-export class StudentTaskFilter extends BaseFilter implements IStudentTaskFilter {
+export class UserTaskFilter extends BaseFilter implements IUserTaskFilter {
   public task_id?: string
 
-  constructor(data?: Partial<IStudentTaskFilter>) {
+  constructor(data?: Partial<IUserTaskFilter>) {
     super(data)
 
     if (data) {

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { question_request, student_question_request, student_task_request } from '~/src/config/repositories';
 import type { Task } from '~/src/modules/task/domain/model';
 import { nano_id } from '~/elpandev/utils';
@@ -123,4 +123,6 @@ watch(student_task, async (value) => {
       <v-custom-form-question :task_id="task.id" :question="question_selected" @stored="on_stored" />
     </v-modal>
   </Teleport>
-</template>
+</template> -->
+
+<template></template>

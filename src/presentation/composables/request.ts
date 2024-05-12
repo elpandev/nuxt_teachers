@@ -1,6 +1,5 @@
-export function useRequest<T>(fn: (...args: any[]) => Promise<T>) {
+export function useRequest<T>(fn: (...args: any[]) => Promise<void>) {
   const count     = ref<number>(0)
-  const data      = ref<T>()
   const pending   = ref<boolean>(false)
   const completed = ref<boolean>(false)
 
@@ -13,7 +12,7 @@ export function useRequest<T>(fn: (...args: any[]) => Promise<T>) {
     completed.value = false
 
     try {
-      data.value = await fn(...args)
+      await fn(...args)
 
       completed.value = true
     }
@@ -25,5 +24,5 @@ export function useRequest<T>(fn: (...args: any[]) => Promise<T>) {
     pending.value = false
   }
 
-  return { request: request as (...args: any[]) => Promise<T>, pending, completed, data, count }
+  return { request: request as (...args: any[]) => Promise<T>, pending, completed, count }
 }

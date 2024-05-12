@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-custom-header-primary :name="`Inicio`" />
 
   <main style="display: grid; gap: 18px;">
@@ -66,14 +66,14 @@
 import { AttendanceFactory } from '~/src/modules/attendance/domain/factory';
 import { AttendanceRegister } from '~/src/modules/attendance/domain/values/register';
 import { EventFactory } from '~/src/modules/event/domain/factory';
-import { StudentFactory } from '~/src/modules/student/domain/factory';
-import { StudentTaskFactory } from '~/src/modules/student_task/domain/factory';
+import { UserFactory } from '~/src/modules/student/domain/factory';
+import { UserTaskFactory } from '~/src/modules/student_task/domain/factory';
 import { TaskFactory } from '~/src/modules/task/domain/factory';
 
-const student_tasks = new StudentTaskFactory()
+const student_tasks = new UserTaskFactory()
   .generate_multiple({ length: 4 })
   .map(student_task => {
-    student_task.student = new StudentFactory().generate()
+    student_task.student = new UserFactory().generate()
     student_task.task = new TaskFactory().generate()
 
     return student_task
@@ -151,4 +151,6 @@ const attendances = new AttendanceFactory()
     padding: 0;
   }
 }
-</style>
+</style> -->
+
+<template></template>

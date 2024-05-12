@@ -57,7 +57,7 @@ const { pending } = await useLazyAsyncData(async () => {
             <td>{{ task.end_at   && new Date(task.end_at)  .toLocaleString() }}</td>
             <td class="actions">
               <v-popup-menu>
-                <nuxt-link :to="`/tasks/${task.id}/students`"><v-icon-visibility /> Ver</nuxt-link>
+                <nuxt-link :to="`/tasks/${task.id}/users`"><v-icon-visibility /> Ver</nuxt-link>
                 <nuxt-link :to="`/tasks/${task.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
                 <button @click="destroy.request(task)"><v-icon-destroy /> Eliminar</button>
               </v-popup-menu>

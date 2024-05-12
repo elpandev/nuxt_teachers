@@ -1,6 +1,6 @@
 import type { IBaseModelRepository } from "~/elpandev/hexagonal/base/domain/repository";
-import { StudentTask } from "./model";
+import { UserTask } from "./model";
 
-export interface IStudentTaskRepository extends IBaseModelRepository<StudentTask> {
+export interface IUserTaskRepository extends IBaseModelRepository<UserTask> {
 
 }

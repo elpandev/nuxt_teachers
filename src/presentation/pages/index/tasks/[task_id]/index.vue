@@ -72,7 +72,7 @@ const { data, pending } = await useLazyAsyncData(async () => {
       </div>
 
       <nav class="container">
-        <nuxt-link :to="`/tasks/${task_id}/students`">Estudiantes</nuxt-link>
+        <nuxt-link :to="`/tasks/${task_id}/users`">Estudiantes</nuxt-link>
         <nuxt-link :to="`/tasks/${task_id}/questions`">Preguntas</nuxt-link>
       </nav>
 
