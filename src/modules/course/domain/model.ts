@@ -1,7 +1,6 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
-import { Student, type IStudent } from "../../student/domain/model";
 import { SelectOption } from "~/src/presentation/models/select_option";
 import { code_id } from "~/elpandev/utils";
 import { User, type IUser } from "../../user/domain/model";
