@@ -1,10 +1,23 @@
 <template>
-  <main v-if="!pending" class="documents">
-    <header>
-      <h1>{{ users_count }} Usuarios</h1>
-      <NuxtLink to="users/create" class="button teal">Nuevo Usuario</NuxtLink>
-    </header>
-    <div class="table-container">
+  <v-custom-header-primary :name="`Usuarios (${users_count})`">
+    <template #buttons>
+      <nuxt-link to="/users/create" class="button solid text teal">Nuevo Usuario</nuxt-link>
+    </template>
+  </v-custom-header-primary>
+
+  <main class="documents">
+    <div class="actions">
+      <button class="action download"><v-icon-download /> Descagar</button>
+      <button class="action search" :class="{ enabled: searcher_enabled }" @click="searcher_enabled = !searcher_enabled"><v-icon-search/></button>
+    </div>
+
+    <div v-if="searcher_enabled" class="container page-filter">
+      <v-input v-model="filter.name" :placeholder="'Nombre'" />
+
+      <button class="button solid text teal" @click="search()">Buscar</button>
+    </div>
+
+    <div class="container table-users-container">
       <table class="table">
         <thead>
           <tr>
@@ -33,7 +46,6 @@
       </table>
     </div>
   </main>
-  <v-loader v-else />
 </template>
 
 <script setup lang="ts">
@@ -42,10 +54,11 @@ import { UserFilter } from '~/src/modules/user/domain/filter';
 import { User, user_role_locale } from '~/src/modules/user/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
-const snackbar    = useSnackbar()
-const filter      = new UserFilter()
-const users       = ref<User[]>([])
-const users_count = ref<number>(0)
+const snackbar         = useSnackbar()
+const filter           = new UserFilter()
+const users            = ref<User[]>([])
+const users_count      = ref<number>(0)
+const searcher_enabled = ref<boolean>(false)
 
 const { request: destroy } = useRequest(async (user_id: string) => {
   try {
@@ -69,10 +82,18 @@ const { request: request_users_count } = useRequest(async () => {
   users_count.value = await user_request.count(filter) as number
 })
 
-const { data, pending } = await useLazyAsyncData(async () => {
+const { request: search } = useRequest(async () => {
   await Promise.all([
     request_users(),
     request_users_count(),
   ])
 })
+
+onMounted(search)
 </script>
+
+<style lang="scss">
+.table-users-container {
+  padding: 15px 18px;
+}
+</style>

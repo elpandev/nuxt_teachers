@@ -2,6 +2,7 @@ import { BaseFilter, QueryWhere, type IBaseFilter, type IQueryFilter } from "~/e
 import { UserRoleEnum } from "./model";
 
 interface IUserFilter extends IBaseFilter {
+  name?:      string
   email?:     string
   roles?:     UserRoleEnum[]
   season_id?: string
@@ -9,6 +10,7 @@ interface IUserFilter extends IBaseFilter {
 }
 
 export class UserFilter extends BaseFilter implements IUserFilter {
+  public name?:      string      
   public email?:     string      
   public roles?:     UserRoleEnum[]
   public season_id?: string      
@@ -18,6 +20,7 @@ export class UserFilter extends BaseFilter implements IUserFilter {
     super(data)
 
     if (data) {
+      if (data.name       != undefined) { this.name     = data.name }
       if (data.email     != undefined) { this.email     = data.email }
       if (data.roles     != undefined) { this.roles     = data.roles }
       if (data.season_id != undefined) { this.season_id = data.season_id }
@@ -39,6 +42,10 @@ export class UserFilter extends BaseFilter implements IUserFilter {
 
   public toParams(): URLSearchParams {
     const params = super.toParams()
+
+    if (typeof this.name == 'string') {
+      params.append('name', this.name)
+    }
 
     if (typeof this.email == 'string') {
       params.append('email', this.email)
