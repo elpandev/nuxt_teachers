@@ -53,14 +53,14 @@ const shared = useShared()
           <nuxt-link class="link"   :to="`/categories`"><v-icon-category-outline /><span>Categorías</span></nuxt-link>
           <nuxt-link class="button" :to="`/categories/create`"><v-icon-add /></nuxt-link>
         </li>
-        <li>
+        <!-- <li>
           <nuxt-link class="link"   :to="`/tables`"><v-icon-category-outline /><span>Tablas</span></nuxt-link>
           <nuxt-link class="button" :to="`/tables/create`"><v-icon-add /></nuxt-link>
         </li>
         <li>
           <nuxt-link class="link"   :to="`/events`"><v-icon-category-outline /><span>Calendario</span></nuxt-link>
           <nuxt-link class="button" :to="`/events/create`"><v-icon-add /></nuxt-link>
-        </li>
+        </li> -->
       </ul>
     </section>
     <footer>
