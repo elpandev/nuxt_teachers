@@ -3,6 +3,7 @@ import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/mod
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
 import { type IQuestionOption, QuestionOption } from "./values/option";
 import { code_id } from "~/elpandev/utils";
+import { SelectOption } from "~/src/presentation/models/select_option";
 
 export interface IQuestion extends IBaseModel {
   id:          string
@@ -28,8 +29,8 @@ export function question_type_locale(type: QuestionTypeEnum): string {
   }
 }
 
-export const question_type_options: ISelectOption[] = Object.values(QuestionTypeEnum)
-  .map(value => ({ key: value, name: question_type_locale(value), value }))
+export const question_type_options: SelectOption<QuestionTypeEnum>[] = Object.values(QuestionTypeEnum)
+  .map(value => new SelectOption({ id: value, name: question_type_locale(value), value }))
 
 export class Question extends BaseModel<IQuestion> implements IQuestion {
   public id:          string               = code_id('T4gWkQn73fhuryNcHFa1vpICeKPl9BMjz2dDXsxOYGA6R5LVU8mtEwqSobZi0J')

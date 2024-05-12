@@ -1,88 +1,4 @@
-<!-- <script setup lang="ts">
-import { question_request, student_question_request, student_task_request } from '~/src/config/repositories';
-import type { Task } from '~/src/modules/task/domain/model';
-import { nano_id } from '~/elpandev/utils';
-import { Question } from '~/src/modules/question/domain/model';
-import { QuestionFilter } from '~/src/modules/question/domain/filter';
-import { useSnackbar } from '~/src/presentation/states/snackbar';
-import { StudentQuestionFilter } from '~/src/modules/student_question/domain/filter';
-import type { StudentQuestion } from '~/src/modules/student_question/domain/model';
-import type { StudentTask } from '~/src/modules/student_task/domain/model';
-import { StudentTaskFilter } from '~/src/modules/student_task/domain/filter';
-import type { ISelectOption } from '~/src/presentation/interfaces/select_option';
-import { Student } from '~/src/modules/student/domain/model';
-
-const attrs             = useAttrs()
-const task              = attrs.task as Task
-const points            = attrs.points as number
-const question_modal    = useModal()
-const route             = useRoute()
-const snackbar          = useSnackbar()
-const question_selected = ref<Question>(new Question())
-const questions         = ref<Question[]>([])
-const student_task      = ref<StudentTask>()
-const student_questions = ref<StudentQuestion[]>([])
-
-const destroy = useRequest(async (question: Question) => {
-  await question_request.destroy(`${question.id}_${task.id}`)
-
-  questions.value.removeWhere(e => e.id == question.id)
-  questions.value = [...questions.value]
-
-  snackbar.value.success('La pregunta ha sido eliminada')
-})
-
-function open_question_selected(question: Question) {
-  question_selected.value = question.copyWith()
-
-  question_modal.open()
-}
-
-function on_stored(question: Question) {
-  questions.value.some(e => e.id == question.id)
-    ? questions.value.replaceFirst(e => e.id == question.id, question)
-    : questions.value.push(question)
-
-  questions.value = [...questions.value]
-
-  snackbar.value.success('La pregunta ha sido guardada')
-}
-
-async function request_student_task_options(name: string): Promise<ISelectOption<StudentTask>[]> {
-  const student_tasks = await student_task_request
-    .paginate(new StudentTaskFilter({ task_id: task.id }))
-
-  return student_tasks.map(e => e.toSelectOption())
-}
-
-const { pending } = useLazyAsyncData(nano_id(), async () => {
-  const [_questions, _student_task] = await Promise.all([
-    question_request.paginate(new QuestionFilter({ task_id: task.id })),
-    route.query.student_id ? student_task_request.get(`${route.query.student_id}_${task.id}`) : undefined,
-  ])
-
-  questions   .value = _questions
-  student_task.value = _student_task
-})
-
-watch(student_task, async (value) => {
-  student_questions.value = value === undefined
-    ? []
-    : await student_question_request.paginate(new StudentQuestionFilter({ task_id: task.id, student_id: value.student.id }))
-})
-</script>
-
 <template>
-  <div v-if="!pending" class="container">
-    <v-selector
-      :model-value="{ name: student_task?.student.name ?? '', value: student_task }"
-      :request="request_student_task_options"
-      :input="false"
-      :restart="() => student_task = undefined"
-      @update:model-value="(value) => student_task = value"
-    />
-  </div>
-
   <section v-if="!pending" class="task-questions container">
     <header>
       <button @click="question_modal.open()">agregar</button>
@@ -93,9 +9,6 @@ watch(student_task, async (value) => {
           <th>Pregunta</th>
           <th>Tipo</th>
           <th>Puntos</th>
-          <template v-if="student_task">
-            <th>Calificación</th>
-          </template>
           <th></th>
         </tr>
       </thead>
@@ -104,13 +17,10 @@ watch(student_task, async (value) => {
           <td class="elipsis">{{ question.question }}</td>
           <td>{{ question.type }}</td>
           <td>{{ question.points }}</td>
-          <template v-if="student_task">
-            <td>{{ student_questions.find(e => e.question_id == question.id)?.points }}</td>
-          </template>
           <td class="actions">
             <v-popup-menu>
-              <button @click="open_question_selected(question)"><v-icon-edit /> Editar</button>
-              <button @click="destroy.request(question)"><v-icon-destroy /> Eliminar</button>
+              <button @click=""><v-icon-edit /> Editar</button>
+              <button @click="destroy(question)"><v-icon-destroy /> Eliminar</button>
             </v-popup-menu>
           </td>
         </tr>
@@ -120,9 +30,84 @@ watch(student_task, async (value) => {
 
   <Teleport to="body">
     <v-modal v-if="question_modal.enabled.value" @closed="question_modal.close()" >
-      <v-custom-form-question :task_id="task.id" :question="question_selected" @stored="on_stored" />
+      <form @submit.prevent="store()">
+        <v-selector
+          v-model="question_type"
+          :label="'Tipo de Pregunta'"
+          :options="question_type_options"
+        />
+
+        <v-input v-model="question.question"      :label="'Pregunta'" />
+        <v-input v-model.number="question.points" :label="'Puntos'" :type="'number'" />
+
+        <section v-if="question.is_selector">
+          <header>
+            <h2>Opciones</h2>
+            <button @click="question.push_option()" class="button outline icon teal" type="button">
+              <v-icon-add />
+            </button>
+          </header>
+          <div v-for="option in question.options" :key="option.id">
+            <input   v-model="option.selected" type="checkbox" >
+            <v-input v-model="option.option"   type="text" />
+          </div>
+        </section>
+
+        <v-loader v-if="store_pending" />
+        <button v-else class="button outline text teal" type="submit">Guardar</button>
+      </form>
     </v-modal>
   </Teleport>
-</template> -->
+</template>
 
-<template></template>
+<script setup lang="ts">
+import { question_request } from '~/src/config/repositories';
+import type { Task } from '~/src/modules/task/domain/model';
+import { nano_id } from '~/elpandev/utils';
+import { Question, QuestionTypeEnum, question_type_options } from '~/src/modules/question/domain/model';
+import { QuestionFilter } from '~/src/modules/question/domain/filter';
+import { useSnackbar } from '~/src/presentation/states/snackbar';
+import { SelectOption } from '~/src/presentation/models/select_option';
+
+const attrs          = useAttrs()
+const task           = attrs.task as Task
+const question_modal = useModal()
+const route          = useRoute()
+const snackbar       = useSnackbar()
+const question       = ref<Question>(new Question())
+const questions      = ref<Question[]>([])
+
+const question_type = computed<SelectOption<QuestionTypeEnum>>({
+  get() { return new SelectOption({ id: question.value.type, name: question.value.type, value: question.value.type }) },
+  set(value) { question.value.type = value.value }
+})
+
+const { request: store, pending: store_pending } = useRequest(async () => {
+  question.value.task_id = task.id
+
+  await question_request.store(question.value)
+
+  questions.value.push(question.value)
+  questions.value = [...questions.value]
+
+  question.value = new Question()
+})
+
+const { request: destroy } = useRequest(async (question: Question) => {
+  await question_request.destroy(`${question.id}_${task.id}`)
+
+  questions.value.removeWhere(e => e.id == question.id)
+  questions.value = [...questions.value]
+
+  snackbar.value.success('La pregunta ha sido eliminada')
+})
+
+const { request: request_questions } = useRequest(async () => {
+  questions.value = await question_request
+    .paginate(new QuestionFilter({ task_id: task.id }))
+})
+
+const { pending } = useLazyAsyncData(nano_id(), async () => {
+  await request_questions()
+})
+</script>

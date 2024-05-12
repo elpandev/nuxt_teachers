@@ -3,8 +3,8 @@ import { user_request, user_task_request } from '~/src/config/repositories';
 import { User } from '~/src/modules/user/domain/model';
 import type { Task } from '~/src/modules/task/domain/model';
 import { nano_id } from '~/elpandev/utils';
-import { UserTask } from '~/src/modules/student_task/domain/model';
-import { UserTaskFilter } from '~/src/modules/student_task/domain/filter';
+import { UserTask } from '~/src/modules/user_task/domain/model';
+import { UserTaskFilter } from '~/src/modules/user_task/domain/filter';
 import { UserFilter } from '~/src/modules/user/domain/filter';
 
 const attrs      = useAttrs()
@@ -17,10 +17,13 @@ async function request_users(): Promise<User[]> {
 }
 
 const { request: store } = useRequest(async (user: User) => {
-  const user_task = new UserTask()
-
-  user_task.user = user.copyWith()
-  user_task.task = task.copyWith()
+  const user_task = new UserTask({
+    user_id:   user.id,
+    user_name: user.name,
+    user_role: user.role,
+    task_id:   task.id,
+    task_name: task.name,
+  })
 
   await user_task_request.store(user_task)
 
@@ -30,7 +33,7 @@ const { request: store } = useRequest(async (user: User) => {
 const { request: destroy } = useRequest(async (user: User) => {
   await user_task_request.destroy(`${user.id}_${task.id}`)
 
-  user_tasks.value.removeWhere(e => e.user.id == user.id)
+  user_tasks.value.removeWhere(e => e.user_id == user.id)
 })
 
 const { request: request_user_tasks } = useRequest(async () => {
@@ -60,13 +63,13 @@ const { pending } = await useLazyAsyncData(nano_id(), async () => {
       </thead>
       <tbody>
         <tr v-for="user_task in user_tasks" :key="user_task.id">
-          <td>{{ user_task.user.id }}</td>
-          <td>{{ user_task.user.name }}</td>
+          <td>{{ user_task.user_id }}</td>
+          <td>{{ user_task.user_name }}</td>
           <td>{{ user_task.password }}</td>
           <td>{{ user_task.points.toFixed(2) }}</td>
           <td>{{ user_task.status }}</td>
           <td class="actions">
-            <nuxt-link :to="`/tasks/${user_task.task.id}/questions?user_id=${user_task.user.id}`">ver</nuxt-link>
+            <nuxt-link :to="`/tasks/${user_task.task_id}/questions?user_id=${user_task.user_id}`">ver</nuxt-link>
           </td>
         </tr>
       </tbody>
@@ -87,7 +90,7 @@ const { pending } = await useLazyAsyncData(nano_id(), async () => {
             <tr v-for="user in users" :key="user.id">
               <td>{{ user.name }}</td>
               <td>
-                <v-icon-close v-if="user_tasks.some(e => e.user.id == user.id)" @click="destroy(user)" />
+                <v-icon-close v-if="user_tasks.some(e => e.user_id == user.id)" @click="destroy(user)" />
                 <v-icon-add v-else @click="store(user)" />
               </td>
             </tr>

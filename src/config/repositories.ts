@@ -38,8 +38,9 @@ import { FetchGradeRepository } from "../modules/grade/infrastructure/fetch_repo
 import { FetchUserGradeRepository } from "../modules/user_grade/infrastructure/fetch_repository";
 import { UserGradeRequestRepository } from "../modules/user_grade/application/request_repository";
 import { FetchTaskRepository } from "../modules/task/infrastructure/fetch_repository";
-import { FetchUserTaskRepository } from "../modules/student_task/infrastructure/fetch_repository";
-import { UserTaskRequestRepository } from "../modules/student_task/aplication/request_repository";
+import { FetchUserTaskRepository } from "../modules/user_task/infrastructure/fetch_repository";
+import { UserTaskRequestRepository } from "../modules/user_task/aplication/request_repository";
+import { FetchQuestionRepository } from "../modules/question/infrastructure/fetch_repository";
 
 export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
@@ -53,7 +54,7 @@ export const user_grade_repository        = new FetchUserGradeRepository()
 export const attendance_repository        = new FetchAttendanceRepository()
 export const grade_repository             = new FetchGradeRepository()
 export const task_repository              = new FetchTaskRepository()
-export const question_repository          = new FirestoreQuestionRepository()
+export const question_repository          = new FetchQuestionRepository()
 export const schedule_repository          = new FirestoreScheduleRepository()
 export const table_repository             = new FirestoreTableRepository()
 export const event_repository             = new FirestoreEventRepository()
