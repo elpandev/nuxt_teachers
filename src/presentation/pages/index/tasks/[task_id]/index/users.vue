@@ -2,7 +2,6 @@
 import { user_request, user_task_request } from '~/src/config/repositories';
 import { User } from '~/src/modules/user/domain/model';
 import type { Task } from '~/src/modules/task/domain/model';
-import { nano_id } from '~/elpandev/utils';
 import { UserTask } from '~/src/modules/user_task/domain/model';
 import { UserTaskFilter } from '~/src/modules/user_task/domain/filter';
 import { UserFilter } from '~/src/modules/user/domain/filter';
@@ -40,7 +39,7 @@ const { request: request_user_tasks } = useRequest(async () => {
   user_tasks.value = await user_task_request.paginate(new UserTaskFilter({ task_id: task.id }))
 })
 
-const { pending } = await useLazyAsyncData(nano_id(), async () => {
+await useLazyAsyncData(async () => {
   await request_user_tasks()
 })
 </script>
@@ -76,7 +75,7 @@ const { pending } = await useLazyAsyncData(nano_id(), async () => {
     </table>
   </section>
 
-  <Teleport to="body">
+  <Teleport to="#__nuxt">
     <v-modal-models v-if="modal.enabled.value" :request="request_users()" @closed="modal.close()" >
       <template #body="{ models: users }">
         <table class="table">

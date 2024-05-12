@@ -46,15 +46,22 @@ const { pending } = await useLazyAsyncData(async () => {
             <th>Activo</th>
             <th>Fecha Inicio</th>
             <th>Fecha Finalización</th>
-            <th></th>
+            <th>Pendiente</th>
+            <th>Iniciado</th>
+            <th>Completado</th>
+            <th>Promedio</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="task in tasks" :key="task.id">
-            <td>{{ task.name }}</td>
+            <td class="ellipsis">{{ task.name }}</td>
             <td>{{ task.enabled ? 'SI' : 'NO' }}</td>
             <td>{{ task.start_at && new Date(task.start_at).toLocaleString() }}</td>
             <td>{{ task.end_at   && new Date(task.end_at)  .toLocaleString() }}</td>
+            <td>{{ task.pending_count }}</td>
+            <td>{{ task.started_count }}</td>
+            <td>{{ task.completed_count }}</td>
+            <td>{{ task.users_points_average.toFixed(2) }}</td>
             <td class="actions">
               <v-popup-menu>
                 <nuxt-link :to="`/tasks/${task.id}/users`"><v-icon-visibility /> Ver</nuxt-link>

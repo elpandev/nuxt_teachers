@@ -97,4 +97,10 @@ export class Task extends BaseModel<ITask> implements ITask {
   public get end_at_expired(): boolean {
     return this.end_at != null && Date.now() >= this.end_at
   }
+
+  public get users_points_average(): number {
+    if (this.users_count <= 0) return 0
+
+    return this.users_points_sum / this.users_count
+  }
 }
