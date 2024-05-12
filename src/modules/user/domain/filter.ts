@@ -1,7 +1,7 @@
 import { BaseFilter, QueryWhere, type IBaseFilter, type IQueryFilter } from "~/elpandev/hexagonal/base/domain/filter";
-import { UserRoleEnum } from "./model";
+import { User, UserRoleEnum } from "./model";
 
-interface IUserFilter extends IBaseFilter {
+interface IUserFilter extends IBaseFilter<User> {
   name?:      string
   email?:     string
   roles?:     UserRoleEnum[]
@@ -9,7 +9,7 @@ interface IUserFilter extends IBaseFilter {
   course_id?: string
 }
 
-export class UserFilter extends BaseFilter implements IUserFilter {
+export class UserFilter extends BaseFilter<User> implements IUserFilter {
   public name?:      string      
   public email?:     string      
   public roles?:     UserRoleEnum[]
@@ -20,7 +20,7 @@ export class UserFilter extends BaseFilter implements IUserFilter {
     super(data)
 
     if (data) {
-      if (data.name       != undefined) { this.name     = data.name }
+      if (data.name      != undefined) { this.name      = data.name }
       if (data.email     != undefined) { this.email     = data.email }
       if (data.roles     != undefined) { this.roles     = data.roles }
       if (data.season_id != undefined) { this.season_id = data.season_id }

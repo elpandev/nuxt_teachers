@@ -43,8 +43,12 @@ export abstract class BaseFetchModelRepository<T extends BaseModel, U extends IB
     await fetch(`${this.reference()}/${id}`, { method: 'DELETE' })
   }
 
-  public async paginate(filter: BaseFilter, last?: T): Promise<T[]> {
-    const response = await fetch(`${this.reference()}?${filter?.toParams()}`, { method: 'GET' })
+  public async paginate(filter: BaseFilter, cursor?: string): Promise<T[]> {
+    const params = filter.toParams()
+
+    typeof cursor == 'string' && params.set('cursor', cursor)
+
+    const response = await fetch(`${this.reference()}?${params}`, { method: 'GET' })
     const data     = await response.json() as any
 
     return data.results.map((e: any) => this.fromPayload(e))

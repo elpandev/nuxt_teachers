@@ -8,7 +8,7 @@ export interface IBaseModelRepository<T extends BaseModel> {
   store      (model: T):   Promise<void>
   update     (id: string, payload: Record<string, any>): Promise<void>
   destroy    (id: string): Promise<void>
-  paginate   (filter?: BaseFilter, last?: T): Promise<T[]>
+  paginate   (filter?: BaseFilter, cursor?: string): Promise<T[]>
   count      (filter?: BaseFilter): Promise<number|Record<string, number>>
   sum        (path: string, filter?: BaseFilter): Promise<number>
   average    (path: string, filter?: BaseFilter): Promise<number>

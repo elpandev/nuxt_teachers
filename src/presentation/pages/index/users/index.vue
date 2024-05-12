@@ -14,6 +14,8 @@
     <div v-if="searcher_enabled" class="container page-filter">
       <v-input v-model="filter.name" :placeholder="'Nombre'" />
 
+      <v-selector v-model="filter_role_option" :options="user_role_options" :placeholder="'Rol'" />
+
       <button class="button solid text teal" @click="search()">Buscar</button>
     </div>
 
@@ -22,9 +24,19 @@
         <thead>
           <tr>
             <th>Rol</th>
-            <th>Nombre</th>
+            <v-th-orderable
+              v-model= "filter.order"
+              :name = "'Nombre'"
+              :path = "'name'"
+              @update:model-value="search()"
+            />
             <th>Email</th>
-            <th>Cursos</th>
+            <v-th-orderable
+              v-model= "filter.order"
+              :name = "'Cursos'"
+              :path = "'courses_count'"
+              @update:model-value="search()"
+            />
             <th></th>
           </tr>
         </thead>
@@ -45,20 +57,36 @@
         </tbody>
       </table>
     </div>
+
+    <button v-if="users.length == filter.limit" @click="request_users(users[users.length - 1])">Más</button>
   </main>
 </template>
 
 <script setup lang="ts">
+import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
 import { user_request } from '~/src/config/repositories';
 import { UserFilter } from '~/src/modules/user/domain/filter';
-import { User, user_role_locale } from '~/src/modules/user/domain/model';
+import { User, UserRoleEnum, user_role_locale, user_role_options } from '~/src/modules/user/domain/model';
+import Filter from '~/src/presentation/components/icon/filter.vue';
+import { SelectOption, select_option_undefined } from '~/src/presentation/models/select_option';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 
 const snackbar         = useSnackbar()
-const filter           = new UserFilter()
+const filter           = new UserFilter({ limit: 10, order: { path: 'name', direction: OrderDirectionEnum.ASC } })
 const users            = ref<User[]>([])
 const users_count      = ref<number>(0)
 const searcher_enabled = ref<boolean>(false)
+
+const filter_role_option = computed<SelectOption<UserRoleEnum|undefined>>({
+  get() {
+    const role = filter.roles?.[0]
+    
+    return role === undefined
+      ? select_option_undefined
+      : new SelectOption({ id: role, name: user_role_locale(role), value: role })
+  },
+  set(value) { filter.roles = value.value ? [value.value] : [] }
+})
 
 const { request: destroy } = useRequest(async (user_id: string) => {
   try {
@@ -74,8 +102,14 @@ const { request: destroy } = useRequest(async (user_id: string) => {
   }
 })
 
-const { request: request_users } = useRequest(async () => {
-  users.value = await user_request.paginate(filter)
+const { request: request_users } = useRequest(async (user?: User) => {
+  const m_filter = new UserFilter({
+    cursor: user,
+    limit: filter.limit,
+    order: filter.order,
+  })
+
+  users.value = await user_request.paginate(m_filter)
 })
 
 const { request: request_users_count } = useRequest(async () => {

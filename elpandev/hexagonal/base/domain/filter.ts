@@ -1,3 +1,5 @@
+import type { BaseModel } from "./model"
+
 export enum OrderDirectionEnum {
   ASC  = 'ASC',
   DESC = 'DESC',
@@ -8,9 +10,10 @@ export interface IBaseFilterOrder {
   direction: OrderDirectionEnum
 }
 
-export interface IBaseFilter {
-  limit?: number
-  order?: IBaseFilterOrder
+export interface IBaseFilter<T extends BaseModel> {
+  cursor?: T
+  limit?:  number
+  order?:  IBaseFilterOrder
 }
 
 export type IQueryFilter = QueryWhere|QueryOrderBy|QueryLimit
@@ -36,14 +39,16 @@ export class QueryLimit {
   ) {}
 }
 
-export abstract class BaseFilter implements IBaseFilter {
-  public limit?: number           = undefined
-  public order?: IBaseFilterOrder = undefined
+export abstract class BaseFilter<T extends BaseModel> {
+  public cursor?: T
+  public limit?:  number
+  public order?:  IBaseFilterOrder
 
-  constructor(data?: Partial<IBaseFilter>) {
+  constructor(data?: Partial<IBaseFilter<T>>) {
     if (data) {
-      if (data.limit) { this.limit = data.limit }
-      if (data.order) { this.order = data.order }
+      if (data.cursor) { this.cursor = data.cursor }
+      if (data.limit)  { this.limit  = data.limit }
+      if (data.order)  { this.order  = data.order }
     }
   }
 
@@ -63,12 +68,15 @@ export abstract class BaseFilter implements IBaseFilter {
     }
 
     if (typeof this.order == 'object') {
-      if (typeof this.order.path == 'string') {
-        params.order_by = this.order.path.toString()
-      }
-
-      if (Object.values(OrderDirectionEnum).includes(this.order.direction)) {
+      if (typeof this.order.path == 'string' && Object.values(OrderDirectionEnum).includes(this.order.direction)) {
+        params.order_by        = this.order.path.toString()
         params.order_direction = this.order.direction.toString()
+
+        if (this.cursor) {
+          const payload = this.cursor.toPayload()
+
+          params.cursor = `${payload[this.order.path]}${payload.id}`
+        }
       }
     }
 
