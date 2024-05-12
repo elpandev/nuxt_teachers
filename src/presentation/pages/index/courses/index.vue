@@ -73,17 +73,16 @@ onMounted(search)
               :path   = "'name'"
               @update:model-value="search()"
             />
-            <th>Profesor</th>
             <v-th-orderable
               v-model  = "filter.order"
-              :name    = "'Estudiantes'"
-              :path    = "'students_count'"
+              :name    = "'Profesor'"
+              :path    = "'teacher_name'"
               @update:model-value="search()"
             />
             <v-th-orderable
               v-model  = "filter.order"
-              :name    = "'Profesores'"
-              :path    = "'teachers_count'"
+              :name    = "'Estudiantes'"
+              :path    = "'students_count'"
               @update:model-value="search()"
             />
             <th></th>
@@ -92,9 +91,8 @@ onMounted(search)
         <tbody>
           <tr v-for="course in courses" :key="course.id">
             <td class="ellipsis">{{ course.name }}</td>
-            <td class="ellipsis">{{ course.teachers_name.join(', ')}}</td>
+            <td class="ellipsis">{{ course.teacher_name }}</td>
             <td>{{ course.students_count }}</td>
-            <td>{{ course.teachers_count }}</td>
             <td class="actions">
               <v-popup-menu>
                 <nuxt-link :to="`/courses/${course.id}/users`"><v-icon-visibility /> Ver</nuxt-link>
