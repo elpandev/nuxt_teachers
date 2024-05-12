@@ -92,4 +92,12 @@ export class User extends BaseModel<IUser> implements IUser {
       expelled_count: this.expelled_count,
     }
   }
+
+  public toSelectOption(): SelectOption<User> {
+    return new SelectOption({
+      id:    this.id,
+      name:  this.name,
+      value: this,
+    })
+  }
 }
