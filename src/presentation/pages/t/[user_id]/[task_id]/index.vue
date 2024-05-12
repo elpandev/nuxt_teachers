@@ -1,4 +1,4 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import { question_request, user_task_request, task_request, student_question_request } from '~/src/config/repositories';
 import { QuestionFilter } from '~/src/modules/question/domain/filter';
 import { StudentQuestionFilter } from '~/src/modules/student_question/domain/filter';
@@ -7,7 +7,7 @@ import { StudentQuestion } from '~/src/modules/student_question/domain/model';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { nano_id } from '~/elpandev/utils';
 import { useAuthState } from '~/src/presentation/states/auth';
-import type { UserTask } from '~/src/modules/student_task/domain/model';
+import { UserTaskStatusEnum, type UserTask } from '~/src/modules/user_task/domain/model';
 
 enum PageEnum {
   INTRO     = 'INTRO',
@@ -39,7 +39,7 @@ const start = useRequest(async () => {
   }
 
   if (user_task.value.is_pending) {
-    await user_task_request.update(`${student_id.value}_${task_id}`, { status: UserTaskStatusEnun.STARTED })
+    await user_task_request.update(`${student_id.value}_${task_id}`, { status: UserTaskStatusEnum.STARTED })
   }
 
   const [_questions, _student_questions] = await Promise.all([
@@ -127,6 +127,4 @@ const { data, pending } = await useLazyAsyncData(nano_id(), async () => {
     <span v-else>Esta Tarea no existe</span>
   </main>
   <v-loader v-else />
-</template> -->
-
-<template></template>
+</template>
