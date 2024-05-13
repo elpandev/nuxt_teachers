@@ -109,7 +109,7 @@ export class User extends BaseModel<IUser> {
     })
   }
 
-  public toCursor(order_by?: string): string|undefined {
+  public cursor(order_by?: string): string|undefined {
     if (order_by === undefined) return undefined
 
     switch (order_by) {

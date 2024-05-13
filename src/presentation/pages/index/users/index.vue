@@ -105,7 +105,7 @@ const { request: destroy } = useRequest(async (user_id: string) => {
 const { request: request_users } = useRequest(async (user?: User) => {
   const m_filter = new UserFilter(filter.toPayload())
 
-  m_filter.cursor = user?.toCursor(m_filter.order?.path)
+  m_filter.cursor = user?.cursor(m_filter.order?.path)
 
   users.value = await user_request.paginate(m_filter)
 })
