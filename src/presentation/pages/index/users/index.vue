@@ -7,8 +7,10 @@
 
   <main class="documents">
     <div class="actions">
-      <button class="action download"><v-icon-download /> Descagar</button>
-      <button class="action search" :class="{ enabled: searcher_enabled }" @click="searcher_enabled = !searcher_enabled"><v-icon-search/></button>
+      <div>
+        <button class="action download"><v-icon-download /> Descagar</button>
+        <button class="action search" :class="{ enabled: searcher_enabled }" @click="searcher_enabled = !searcher_enabled"><v-icon-search/></button>
+      </div>
     </div>
 
     <div v-if="searcher_enabled" class="container page-filter">
@@ -58,7 +60,7 @@
       </table>
     </div>
 
-    <button v-if="users.length == filter.limit" @click="request_users(users.last())">Más</button>
+    <button v-if="users.length < users_count" class="button solid text teal" @click="request_users(users.last())">Más</button>
   </main>
 </template>
 
@@ -103,7 +105,11 @@ const { request: destroy } = useRequest(async (user_id: string) => {
 })
 
 const { request: request_users } = useRequest(async (user?: User) => {
-  users.value = await user_request.paginate(filter, user)
+  const data = await user_request.paginate(filter, user)
+
+  user === undefined
+    ? users.value = data
+    : users.value.push(...data)
 })
 
 const { request: request_users_count } = useRequest(async () => {

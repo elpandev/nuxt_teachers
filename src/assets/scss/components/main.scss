@@ -16,6 +16,16 @@ main {
         padding: 12px 21px 12px 12px;
       }
     }
+    > .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      > div {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+    }
   }
   &.create {
     > header {
