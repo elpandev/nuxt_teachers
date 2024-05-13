@@ -39,13 +39,13 @@
     <template v-if="filter.enabled() && search_count > 0">
       <div class="attendances-statistics"> 
         <section class="container percents">
-          <v-percent :class="`status-${AttendanceRegisterStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="status_count.PRESENT" :max="sum_status_count" :average="status_count.PRESENT/attendances_count" />
-          <v-percent :class="`status-${AttendanceRegisterStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="status_count.LATE"    :max="sum_status_count" :average="status_count.LATE/attendances_count" />
+          <v-percent :class="`status-${UserAttendanceStatusEnum.PRESENT.toLowerCase()}`"  :name="'Presente'"  :value="status_count.PRESENT" :max="sum_status_count" :average="status_count.PRESENT/attendances_count" />
+          <v-percent :class="`status-${UserAttendanceStatusEnum.LATE.toLowerCase()}`"     :name="'Tarde'"     :value="status_count.LATE"    :max="sum_status_count" :average="status_count.LATE/attendances_count" />
         </section>
 
         <section class="container percents">
-          <v-percent :class="`status-${AttendanceRegisterStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="status_count.ABSENT"   :max="sum_status_count" :average="status_count.ABSENT/attendances_count" />
-          <v-percent :class="`status-${AttendanceRegisterStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="status_count.EXPELLED" :max="sum_status_count" :average="status_count.EXPELLED/attendances_count" />
+          <v-percent :class="`status-${UserAttendanceStatusEnum.ABSENT.toLowerCase()}`"   :name="'Ausente'"   :value="status_count.ABSENT"   :max="sum_status_count" :average="status_count.ABSENT/attendances_count" />
+          <v-percent :class="`status-${UserAttendanceStatusEnum.EXPELLED.toLowerCase()}`" :name="'Expulsado'" :value="status_count.EXPELLED" :max="sum_status_count" :average="status_count.EXPELLED/attendances_count" />
         </section>
       </div>
     </template>
@@ -130,7 +130,6 @@ import { CategoryFilter } from '~/src/modules/category/domain/filter';
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { CourseFilter } from '~/src/modules/course/domain/filter';
-import { AttendanceRegisterStatusEnum } from '~/src/modules/attendance/domain/values/register';
 import { SelectOption, select_option_null, select_option_undefined } from '~/src/presentation/models/select_option';
 import type { User } from '~/src/modules/user/domain/model';
 import { UserAttendanceStatusEnum } from '~/src/modules/user_attendance/domain/model';
