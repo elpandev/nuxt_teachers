@@ -103,11 +103,7 @@ const { request: destroy } = useRequest(async (user_id: string) => {
 })
 
 const { request: request_users } = useRequest(async (user?: User) => {
-  const m_filter = new UserFilter(filter.toPayload())
-
-  m_filter.cursor = user?.cursor(m_filter.order?.path)
-
-  users.value = await user_request.paginate(m_filter)
+  users.value = await user_request.paginate(filter, user)
 })
 
 const { request: request_users_count } = useRequest(async () => {

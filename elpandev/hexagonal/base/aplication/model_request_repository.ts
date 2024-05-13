@@ -10,7 +10,7 @@ export abstract class BaseModelRequestRepository<T extends BaseModel, U extends 
   public async update (id: string, payload: Record<string, any>) { return this.repository.update(id, payload) }
   public async count  (filter?: BaseFilter) { return this.repository.count(filter) }
   
-  public async paginate(filter?: BaseFilter, cursor?: string) { return this.repository.paginate(filter, cursor) }
+  public async paginate(filter?: BaseFilter, last?: T) { return this.repository.paginate(filter, last) }
 
   public async sum    (path: string, filter?: BaseFilter) { return this.repository.sum(path, filter) }
   public async average(path: string, filter?: BaseFilter) { return this.repository.average(path, filter) }

@@ -39,8 +39,7 @@ export class QueryLimit {
   ) {}
 }
 
-export abstract class BaseFilter<T extends IBaseFilter> {
-  public cursor?: string
+export abstract class BaseFilter<T extends IBaseFilter = any> {
   public limit?:  number
   public order?:  IBaseFilterOrder
 
@@ -67,8 +66,6 @@ export abstract class BaseFilter<T extends IBaseFilter> {
       if (typeof this.order.path == 'string' && Object.values(OrderDirectionEnum).includes(this.order.direction)) {
         params.order_by        = this.order.path.toString()
         params.order_direction = this.order.direction.toString()
-
-        if (this.cursor) params.cursor = this.cursor
       }
     }
 
@@ -77,7 +74,6 @@ export abstract class BaseFilter<T extends IBaseFilter> {
 
   public fromPayload(data?: Partial<T>): typeof this {
     if (data) {
-      if (data.cursor) { this.cursor = data.cursor }
       if (data.limit)  { this.limit  = data.limit }
       if (data.order)  { this.order  = data.order }
     }
@@ -87,7 +83,6 @@ export abstract class BaseFilter<T extends IBaseFilter> {
 
   public toPayload(): Partial<T> {
     return {
-      cursor: this.cursor,
       limit:  this.limit,
       order:  this.order,
     } as any
