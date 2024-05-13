@@ -58,7 +58,7 @@
       </table>
     </div>
 
-    <button v-if="users.length == filter.limit" @click="request_users(users[users.length - 1])">Más</button>
+    <button v-if="users.length == filter.limit" @click="request_users(users.last())">Más</button>
   </main>
 </template>
 

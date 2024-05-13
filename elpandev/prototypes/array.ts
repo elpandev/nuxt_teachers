@@ -9,6 +9,8 @@ interface Array<T> {
   chunks(limit: number): T[][]
   random(): T
   combinations(): string[][]
+  first(): T|undefined
+  last(): T|undefined
 }
 
 Array.prototype.isEmpty = function (this: Array<any>) {
@@ -90,3 +92,11 @@ Array.prototype.combinations = function<T extends string>(this: Array<T>) {
 
   return combinations;
 }
+
+Array.prototype.first = function (this: Array<any>) {
+  return this[0]
+};
+
+Array.prototype.last = function (this: Array<any>) {
+  return this[this.length - 1]
+};
