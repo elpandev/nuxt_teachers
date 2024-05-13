@@ -10,8 +10,8 @@ export interface IBaseFilterOrder {
   direction: OrderDirectionEnum
 }
 
-export interface IBaseFilter<T extends BaseModel> {
-  cursor?: T
+export interface IBaseFilter {
+  cursor?: string
   limit?:  number
   order?:  IBaseFilterOrder
 }
@@ -39,17 +39,13 @@ export class QueryLimit {
   ) {}
 }
 
-export abstract class BaseFilter<T extends BaseModel> {
-  public cursor?: T
+export abstract class BaseFilter<T extends IBaseFilter> {
+  public cursor?: string
   public limit?:  number
   public order?:  IBaseFilterOrder
 
-  constructor(data?: Partial<IBaseFilter<T>>) {
-    if (data) {
-      if (data.cursor) { this.cursor = data.cursor }
-      if (data.limit)  { this.limit  = data.limit }
-      if (data.order)  { this.order  = data.order }
-    }
+  constructor(data?: Partial<T>) {
+    this.fromPayload(data)
   }
 
   public queries(): IQueryFilter[] {
@@ -72,15 +68,29 @@ export abstract class BaseFilter<T extends BaseModel> {
         params.order_by        = this.order.path.toString()
         params.order_direction = this.order.direction.toString()
 
-        if (this.cursor) {
-          const payload = this.cursor.toPayload()
-
-          params.cursor = `${payload[this.order.path]}${payload.id}`
-        }
+        if (this.cursor) params.cursor = this.cursor
       }
     }
 
     return new URLSearchParams(params)
+  }
+
+  public fromPayload(data?: Partial<T>): typeof this {
+    if (data) {
+      if (data.cursor) { this.cursor = data.cursor }
+      if (data.limit)  { this.limit  = data.limit }
+      if (data.order)  { this.order  = data.order }
+    }
+
+    return this
+  }
+
+  public toPayload(): Partial<T> {
+    return {
+      cursor: this.cursor,
+      limit:  this.limit,
+      order:  this.order,
+    } as any
   }
 
   // abstract get enabled(): boolean

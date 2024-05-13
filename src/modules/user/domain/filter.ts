@@ -1,7 +1,7 @@
 import { BaseFilter, QueryWhere, type IBaseFilter, type IQueryFilter } from "~/elpandev/hexagonal/base/domain/filter";
-import { User, UserRoleEnum } from "./model";
+import { User, UserRoleEnum, type IUser } from "./model";
 
-interface IUserFilter extends IBaseFilter<User> {
+interface IUserFilter extends IBaseFilter {
   name?:      string
   email?:     string
   roles?:     UserRoleEnum[]
@@ -9,7 +9,7 @@ interface IUserFilter extends IBaseFilter<User> {
   course_id?: string
 }
 
-export class UserFilter extends BaseFilter<User> implements IUserFilter {
+export class UserFilter extends BaseFilter<IUserFilter> {
   public name?:      string      
   public email?:     string      
   public roles?:     UserRoleEnum[]
@@ -19,6 +19,12 @@ export class UserFilter extends BaseFilter<User> implements IUserFilter {
   constructor(data?: Partial<IUserFilter>) {
     super(data)
 
+    this.fromPayload(data)
+  }
+
+  public fromPayload(data?: Partial<IUserFilter>): this {
+    super.fromPayload(data)
+
     if (data) {
       if (data.name      != undefined) { this.name      = data.name }
       if (data.email     != undefined) { this.email     = data.email }
@@ -26,6 +32,14 @@ export class UserFilter extends BaseFilter<User> implements IUserFilter {
       if (data.season_id != undefined) { this.season_id = data.season_id }
       if (data.course_id != undefined) { this.course_id = data.course_id }
     }
+
+    return this
+  }
+
+  public toPayload(): Partial<IUserFilter> {
+    const payload = super.toPayload()
+
+    return payload
   }
 
   public queries(): IQueryFilter[] {
