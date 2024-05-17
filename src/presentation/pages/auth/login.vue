@@ -24,13 +24,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <form class="form" @submit.prevent="request">
-    <v-form-input
+  <form class="login" @submit.prevent="request">
+    <v-input
       v-model="data.email"
       :label="'Email'"
       :errors="(validator?.errors.email as string[])"
     />
-    <v-form-input
+    <v-input
       v-model="data.password"
       :label="'Contraseña'"
       :type="'password'"
@@ -40,3 +40,10 @@ useSeoMeta({
     <button v-else class="button outline text teal" type="submit">Ingresar</button>
   </form>
 </template>
+
+<style lang="scss">
+form.login {
+  display: grid;
+  gap: 18px;
+}
+</style>

@@ -67,7 +67,7 @@
       background-color: orange;
     }
     &.teal {
-      background-color: rgb(50, 175, 175);
+      background-color: $color_primary;
     }
   }
   &.disabled {

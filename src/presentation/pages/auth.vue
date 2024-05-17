@@ -28,7 +28,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="auth box rounded">
+  <main class="auth">
     <nav>
       <nuxt-link class="button outline text teal" :class="{ solid: route.path == '/auth/login' }" to="/auth/login">Ingresar</nuxt-link>
       <nuxt-link class="button outline text teal" :class="{ solid: route.path == '/auth/register' }" to="/auth/register">Registrarse</nuxt-link>
@@ -38,18 +38,20 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
-  main.auth {
+main.auth {
+  display: grid;
+  gap: 24px;
+  max-width: 480px;
+  width: 90vw;
+  margin: 20vh auto 0 auto;
+  padding: 48px;
+  box-shadow: 0 1px 3px 0 #ccc;
+  border-radius: 24px;
+  > nav {
     display: grid;
-    gap: 24px;
-    max-width: 480px;
-    width: 90vw;
-    margin: 48px auto 128px auto;
-    padding: 24px;
-    > nav {
-      display: grid;
-      grid-template-columns: repeat(2, 128px);
-      gap: 12px;
-      justify-content: center;
-    }
+    grid-template-columns: repeat(2, 128px);
+    gap: 12px;
+    justify-content: center;
   }
+}
 </style>

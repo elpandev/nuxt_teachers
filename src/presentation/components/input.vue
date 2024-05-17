@@ -3,7 +3,7 @@
 
   interface Props {
     label?: string
-    type?: 'text'|'number'|'datetime-local'
+    type?: 'text'|'number'|'datetime-local'|'password'
     step?: number
     errors?: string[]
     placeholder?: string

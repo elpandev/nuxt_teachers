@@ -32,24 +32,24 @@ useSeoMeta({
 </script>
 
 <template>
-  <form class="form" @submit.prevent="request()">
-    <v-form-input
+  <form class="register" @submit.prevent="request()">
+    <v-input
       v-model="data.name"
       :label="'Nombre'"
       :errors="(validator?.errors.name as string[])"
     />
-    <v-form-input
+    <v-input
       v-model="data.email"
       :label="'Email'"
       :errors="(validator?.errors.email as string[])"
     />
-    <v-form-input
+    <v-input
       v-model="data.password"
       :label="'Contraseña'"
       :type="'password'"
       :errors="(validator?.errors.password as string[])"
     />
-    <v-form-input
+    <v-input
       v-model="data.password_confirmation"
       :label="'Confirmación de Contraseña'"
       :type="'password'"
@@ -59,3 +59,10 @@ useSeoMeta({
     <button v-else class="button outline text teal" type="submit">Registrarse</button>
   </form>
 </template>
+
+<style lang="scss">
+form.register {
+  display: grid;
+  gap: 18px;
+}
+</style>
