@@ -27,13 +27,16 @@ function is_attached(user: User): boolean {
   return user_grades.value.some(e => e.user_id == user.id)
 }
 
-const { request: request_modal_users } = useRequest(async () => {
-  const filter = new UserFilter({
-    order: { path: 'name', direction: OrderDirectionEnum.ASC },
-    roles: [UserRoleEnum.TEACHER, UserRoleEnum.STUDENT]
-  })
+function on_focus_out_score(user_grade: UserGrade) {
+  update(user_grade)
+}
 
-  modal_users.value =  await user_request.paginate(filter)
+function on_focus_out_comment(user_grade: UserGrade) {
+  update(user_grade)
+}
+
+const { request: update } = useRequest(async (user_grade: UserGrade) => {
+  await user_grade_request.update(user_grade.id, user_grade.toPayload())
 })
 
 const { request: store } = useRequest(async (user: User) => {
@@ -49,6 +52,15 @@ const { request: destroy } = useRequest(async (user_grade_id: string) => {
 
   user_grades.value.removeWhere(e => e.id == user_grade_id)
   user_grades.value = [...user_grades.value]
+})
+
+const { request: request_modal_users } = useRequest(async () => {
+  const filter = new UserFilter({
+    order: { path: 'name', direction: OrderDirectionEnum.ASC },
+    roles: [UserRoleEnum.TEACHER, UserRoleEnum.STUDENT]
+  })
+
+  modal_users.value =  await user_request.paginate(filter)
 })
 
 const { request: request_user_grades } = useRequest(async () => {
@@ -73,21 +85,23 @@ await useLazyAsyncData(async () => {
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Nombre</th>
+          <th>Calificación</th>
+          <th>Comentario</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="user_grade in user_grades" :key="user_grade.id">
-          <td>{{ user_grade.id }}</td>
           <td>{{ user_grade.user_name }}</td>
+          <td>
+            <input v-model="user_grade.score" @focusout="on_focus_out_score(user_grade)" />
+          </td>
+          <td>
+            <textarea v-model="user_grade.comment" rows="1" @focusout="on_focus_out_comment(user_grade)"></textarea>
+          </td>
           <td class="actions">
-            <v-popup-menu>
-              <nuxt-link :to="`/users/${user_grade.user_id}`"><v-icon-visibility /> Ver</nuxt-link>
-              <nuxt-link :to="`/users/${user_grade.user_id}/edit`"><v-icon-edit /> Editar</nuxt-link>
-              <button @click="destroy(user_grade.id)"><v-icon-destroy /> Eliminar</button>
-            </v-popup-menu>
+            <button @click="destroy(user_grade.id)"><v-icon-destroy /></button>
           </td>
         </tr>
       </tbody>

@@ -74,7 +74,7 @@
             <td>{{ grade.users_average }}</td>
             <td class="actions">
               <v-popup-menu>
-                <nuxt-link :to="`/grades/${grade.id}`"><v-icon-visibility /> Ver</nuxt-link>
+                <nuxt-link :to="`/grades/${grade.id}/users`"><v-icon-visibility /> Ver</nuxt-link>
                 <nuxt-link :to="`/grades/${grade.id}/edit`"><v-icon-edit /> Editar</nuxt-link>
                 <button @click="destroy(grade.id)"><v-icon-destroy /> Eliminar</button>
               </v-popup-menu>

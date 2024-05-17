@@ -91,4 +91,13 @@ export class UserGrade extends BaseModel<IUserGrade> {
 
     return this
   }
+
+  public has_changed(): boolean {
+    if (this.initial === undefined) return false
+
+    return (
+      this.comment != this.initial.comment ||
+      this.score   != this.initial.score
+    )
+  }
 }
