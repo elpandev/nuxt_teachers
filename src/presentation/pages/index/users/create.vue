@@ -1,12 +1,10 @@
 <template>
+  <v-custom-header-primary :name="title" />
+
   <main v-if="!pending" class="create">
     <template v-if="user_id && !user.exists">
       <span>Este usuario no existe</span>
     </template>
-
-    <header>
-      <h1>{{ title }}</h1>
-    </header>
 
     <form class="form" @submit.prevent="store()">
       <template v-if="!user_id">

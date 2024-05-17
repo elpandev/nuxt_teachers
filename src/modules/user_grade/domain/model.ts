@@ -1,5 +1,7 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
+import type { User } from "../../user/domain/model";
+import type { Grade } from "../../grade/domain/model";
 
 export interface IUserGrade extends IBaseModel {
   id:            string
@@ -20,10 +22,10 @@ export class UserGrade extends BaseModel<IUserGrade> {
   public user_id:       string      = '';
   public user_name:     string      = '';
   public grade_id:      string      = '';
-  public course_id:     string|null = '';
-  public course_name:   string|null = '';
-  public category_id:   string|null = '';
-  public category_name: string|null = '';
+  public course_id:     string|null = null;
+  public course_name:   string|null = null;
+  public category_id:   string|null = null;
+  public category_name: string|null = null;
   public comment:       string      = '';
   public score:         number      = 0
 
@@ -75,5 +77,18 @@ export class UserGrade extends BaseModel<IUserGrade> {
       comment:       this.comment,
       score:         this.score,
     }
+  }
+
+  public fromUser(user: User): this {
+    this.user_id    = user.id
+    this.user_name  = user.name
+
+    return this
+  }
+
+  public fromGrade(grade: Grade): this {
+    this.grade_id = grade.id
+
+    return this
   }
 }
