@@ -3,11 +3,10 @@
 
   interface Props {
     label?: string
-    type?: 'text'|'number'|'datetime-local'|'password'
+    type?: 'text'|'number'|'datetime-local'|'password'|'textarea'
     step?: number
     errors?: string[]
     placeholder?: string
-    textarea?: boolean
   }
 
   const id    = nano_id()
@@ -33,7 +32,7 @@
   <div class="input">
     <label v-if="label" :for="id">{{ label }}</label>
 
-    <textarea v-if="textarea"
+    <textarea v-if="type == 'textarea'"
       v-model="value"
       :id="id"
       :placeholder="placeholder"

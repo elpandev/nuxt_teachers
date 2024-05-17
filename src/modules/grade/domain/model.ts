@@ -1,12 +1,15 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import { code_id } from "~/elpandev/utils";
+import { Course } from "../../course/domain/model";
+import type { SelectOption } from "~/src/presentation/models/select_option";
+import { Category } from "../../category/domain/model";
 
 export interface IGrade extends IBaseModel {
   id:            string
   name:          string
   description:   string
-  date_at:       number
+  date_at:       Date
   users_count:   number
   scores_sum:    number
   course_id:     string|null
@@ -19,7 +22,7 @@ export class Grade extends BaseModel<IGrade> implements IGrade {
   public id:            string      = code_id('yeR2GMIt6E89qKgCYrzvU1O4BTVNuXZWLpAjSslQJ35omchF0knadPibxHw7D');
   public name:          string      = ''
   public description:   string      = ''
-  public date_at:       number      = Date.now()
+  public date_at:       Date        = new Date()
   public users_count:   number      = 0
   public scores_sum:    number      = 0
   public course_id:     string|null = null
@@ -79,6 +82,24 @@ export class Grade extends BaseModel<IGrade> implements IGrade {
     payload.category_name = this.category_name
 
     return payload
+  }
+
+  public course_select_option(): SelectOption<Course> {
+    const course = new Course({
+      id:   this.course_id   ?? undefined,
+      name: this.course_name ?? undefined,
+    })
+
+    return course.toSelectOption()
+  }
+
+  public category_select_option(): SelectOption<Category> {
+    const category = new Category({
+      id:   this.category_id   ?? undefined,
+      name: this.category_name ?? undefined,
+    })
+
+    return category.toSelectOption()
   }
 
   public get users_average(): number {    

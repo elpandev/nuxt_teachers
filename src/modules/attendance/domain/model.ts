@@ -1,7 +1,5 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
-import { AttendanceRegister, AttendanceRegisterStatusEnum } from "./values/register";
 import { Course } from "../../course/domain/model";
-import type { IAttendanceRegister } from "./values/register";
 import type { ICourse } from "../../course/domain/model";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import { ErrorMessage } from "~/elpandev/hexagonal/module/domain/error";

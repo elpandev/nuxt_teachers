@@ -1,104 +1,123 @@
 <script setup lang="ts">
-  import { Validator } from '@/elpandev/validator';
-  import { nano_id } from "@/elpandev/utils/methods/nano_id";
-  import { GradeFactory } from '~/src/modules/grade/domain/factory';
-  import { grade_request, course_request, category_request } from '~/src/config/repositories';
-  import { useSnackbar } from '~/src/presentation/states/snackbar';
-  import { Course } from '~/src/modules/course/domain/model';
-  import type { ISelectOption } from '~/src/presentation/interfaces/select_option';
+import { Validator } from '@/elpandev/validator';
+import { nano_id } from "@/elpandev/utils/methods/nano_id";
+import { GradeFactory } from '~/src/modules/grade/domain/factory';
+import { grade_request, course_request, category_request } from '~/src/config/repositories';
+import { useSnackbar } from '~/src/presentation/states/snackbar';
+import { Course } from '~/src/modules/course/domain/model';
+import type { ISelectOption } from '~/src/presentation/interfaces/select_option';
 import { CourseFilter } from '~/src/modules/course/domain/filter';
 import { CategoryFilter } from '~/src/modules/category/domain/filter';
 import { CategoryTypeEnum, type Category } from '~/src/modules/category/domain/model';
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
+import type { SelectOption } from '~/src/presentation/models/select_option';
+import { Grade } from '~/src/modules/grade/domain/model';
 
-  const props     = defineProps<{ grade_id?: string }>()
-  const title     = `${ props.grade_id ? 'Editar' : 'Nueva' } Hoja de Calificaciones`
-  const validator = ref<Validator>(new Validator({ payload: {}, rules: {} }))
-  const snackbar  = useSnackbar()
-  const router    = useRouter()
+const props     = defineProps<{ grade_id?: string }>()
+const title     = `${ props.grade_id ? 'Editar' : 'Nueva' } Hoja de Calificaciones`
+const validator = ref<Validator>(new Validator({ payload: {}, rules: {} }))
+const snackbar  = useSnackbar()
+const router    = useRouter()
+const grade     = ref<Grade>(new Grade())
 
-  //#region course
+//#region course
 
-  async function search_course(text: string): Promise<ISelectOption<Course>[]> {
-    const data = await course_request.paginate(new CourseFilter({ name: text }))
+const course_option = computed<SelectOption<Course>>({
+  get() { return grade.value.course_select_option() },
+  set(value) {
+    grade.value.course_id   = value.id
+    grade.value.course_name = value.name
+  }
+})
 
-    return data.map(e => e.toSelectOption())
+async function search_course(text: string): Promise<SelectOption<Course>[]> {
+  const data = await course_request.paginate(new CourseFilter({ name: text }))
+
+  return data.map(e => e.toSelectOption())
+}
+
+//#endregion
+//#region category
+
+const category_option = computed<SelectOption<Category>>({
+  get() { return grade.value.category_select_option() },
+  set(value) {
+    grade.value.category_id   = value.id
+    grade.value.category_name = value.name
+  }
+})
+
+async function search_category(name: string): Promise<SelectOption<Category>[]> {
+  const data = await category_request.paginate(new CategoryFilter({
+    name: name,
+    type: CategoryTypeEnum.GRADE,
+    order: {
+      path: 'name',
+      direction: OrderDirectionEnum.ASC,
+    }
+  }))
+
+  return data.map(e => e.toSelectOption())
+}
+
+//#endregion
+
+async function request_grade() {
+  grade.value = props.grade_id
+    ? await grade_request.get(props.grade_id) ?? new Grade()
+    : new GradeFactory().generate()
+}
+
+const { request: store, pending: store_pending } = useRequest(async () => {
+  try {
+    await grade_request.store(grade.value)
+
+    snackbar.value.success(`La hoja de calificaciones "${grade.value.name}" ha sido creada`)
+
+    router.push(`/grades/${grade.value.id}`)
   }
 
+  catch (error) {
+    if (error instanceof Validator) { validator.value = error }
 
-  async function search_category(name: string): Promise<ISelectOption<Category>[]> {
-    const data = await category_request.paginate(new CategoryFilter({
-      name: name,
-      type: CategoryTypeEnum.GRADE,
-      order: {
-        path: 'name',
-        direction: OrderDirectionEnum.ASC,
-      }
-    }))
-
-    return data.map(e => e.toSelectOption())
+    console.error(error)
   }
+})
 
-  //#endregion
+const { pending } = await useLazyAsyncData(nano_id(), async () => {
+  await request_grade()
+})
 
-  const store = useRequest(async () => {
-    try {
-      console.log(data.value!.grade!)
-      await grade_request.store(data.value!.grade!)
-
-      snackbar.value.success(`La hoja de calificaciones "${data.value!.grade!.name}" ha sido creada`)
-
-      router.push(`/grades/${data.value!.grade!.id}`)
-    }
-
-    catch (error) {
-      if (error instanceof Validator) { validator.value = error }
-
-      console.error(error)
-    }
-  })
-
-  const { data, pending } = await useLazyAsyncData(nano_id(), async () => {
-    const grade = props.grade_id
-      ? await grade_request.get(props.grade_id)
-      : new GradeFactory().generate()
-
-    return { grade }
-  })
-
-  useSeoMeta({ title })
+useSeoMeta({ title })
 </script>
 
 <template>
   <main v-if="!pending" class="create">
-    <template v-if="data?.grade">
-      <header class="container">
-        <h1>{{ title }}</h1>
-      </header>
-      <form class="form" @submit.prevent="store.request()">
-        <v-selector
-          :model-value = "data.grade.course"
-          :label       = "'Curso'"
-          :request     = "search_course"
-          :input       ="true"
-          @update:model-value="(value) => data!.grade!.course = value"
-        />
+    <header class="container">
+      <h1>{{ title }}</h1>
+    </header>
 
-        <v-selector
-          v-model  = "data.grade.category"
-          :label   = "'Category'"
-          :request = "search_category"
-        />
+    <form class="form" @submit.prevent="store()">
+      <v-selector
+        v-model  = "course_option"
+        :label   = "'Curso'"
+        :request = "search_course"
+        :input   = "true"
+      />
 
-        <v-form-input           v-model="data.grade.name"        :label="'Nombre'" />
-        <v-form-text-area       v-model="data.grade.description" :label="'Descripción'" />
+      <v-selector
+        v-model  = "category_option"
+        :label   = "'Category'"
+        :request = "search_category"
+      />
 
-        <v-form-input-date-time v-model="data.grade.date_at"     :label="'Fecha'" />
+      <v-input v-model="grade.name"        :label="'Nombre'"      :type="'text'" />
+      <v-input v-model="grade.description" :label="'Descripción'" :type="'textarea'" />
+      <v-input v-model="grade.date_at"     :label="'Fecha'"       :type="'datetime-local'" />
 
-        <v-loader v-if="store.pending.value" />
-        <button v-else class="button outline text teal" type="submit">Guardar</button>
-      </form>
-    </template>
+      <v-loader v-if="store_pending" />
+      <button v-else class="button outline text teal" type="submit">Guardar</button>
+    </form>
   </main>
   <v-loader v-else />
 </template>

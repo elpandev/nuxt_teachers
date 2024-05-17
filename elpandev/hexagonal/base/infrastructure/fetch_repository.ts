@@ -1,20 +1,13 @@
 import type { IBaseModelRepository } from "../domain/repository";
-import type { BaseModel, IBaseModel } from "../domain/model";
+import type { BaseModel } from "../domain/model";
 import { BaseFilter } from "../domain/filter";
 
 
-export abstract class BaseFetchModelRepository<T extends BaseModel, U extends IBaseModel> implements IBaseModelRepository<T> {
+export abstract class BaseFetchModelRepository<T extends BaseModel, U> implements IBaseModelRepository<T> {
   abstract reference(): string
 
-  abstract fromPayload(data: any): T
-
-  public toPayload(model: T): Partial<U> {
-    const payload = model.toPayload()
-
-    delete payload.id
-
-    return payload
-  }
+  abstract fromPayload(payload: Partial<U>): T
+  abstract toPayload(model: T): Partial<U>
 
   public async get(id: string): Promise<T|undefined> {
     const response = await fetch(`${this.reference()}/${id}`, { method: 'GET' })
@@ -28,7 +21,7 @@ export abstract class BaseFetchModelRepository<T extends BaseModel, U extends IB
   public async store(model: T): Promise<void> {
     await fetch(`${this.reference()}`, {
       method: 'POST',
-      body: JSON.stringify(model.toPayload()),
+      body: JSON.stringify(this.toPayload(model)),
     })
   }
 

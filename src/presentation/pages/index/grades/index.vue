@@ -67,7 +67,7 @@
         </thead>
         <tbody>
           <tr v-for="grade in grades" :key="grade.id">
-            <td>{{ new Date(grade.date_at).toLocaleDateString('es', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }}</td>
+            <td>{{ grade.date_at.toLocaleDateString('es', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }}</td>
             <td>{{ grade.name }}</td>
             <td>{{ grade.course_name }}</td>
             <td>{{ grade.category_name }}</td>
