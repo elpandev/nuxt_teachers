@@ -7,9 +7,11 @@
 
   <main v-if="!pending" class="documents">
     <div class="actions">
-      <v-custom-button-generate-report-attendances />
-      <button class="action download"><v-icon-download /> Descagar</button>
-      <button class="action search" :class="{ enabled: searcher_enabled }" @click="searcher_enabled = !searcher_enabled"><v-icon-search/></button>
+      <div>
+        <v-custom-button-generate-report-attendances />
+        <button class="action download"><v-icon-download /> Descagar</button>
+        <button class="action search" :class="{ enabled: searcher_enabled }" @click="searcher_enabled = !searcher_enabled"><v-icon-search/></button>
+      </div>
     </div>
 
     <div v-if="searcher_enabled" class="container page-filter">

@@ -63,10 +63,12 @@ const { data, pending } = await useLazyAsyncData(request_data)
   </v-custom-header-primary>
 
   <main class="documents">
-    <div class="buttons">
-      <button class="button filter"   :class="{ enabled: filter.enabled }" @click="filter_enabled = !filter_enabled"><v-icon-filter /> Filtrar</button>
-      <button class="button download" :class="{ enabled: filter.enabled }"><v-icon-download /> Exportar</button>
-      <button class="button download" :class="{ enabled: filter.enabled }"><v-icon-download /> Importar</button>
+    <div class="actions">
+      <div>
+        <button class="action filter"   :class="{ enabled: filter.enabled }" @click="filter_enabled = !filter_enabled"><v-icon-filter /> Filtrar</button>
+        <button class="action download" :class="{ enabled: filter.enabled }"><v-icon-download /> Exportar</button>
+        <button class="action download" :class="{ enabled: filter.enabled }"><v-icon-download /> Importar</button>
+      </div>
     </div>
 
     <template v-if="filter_enabled">
