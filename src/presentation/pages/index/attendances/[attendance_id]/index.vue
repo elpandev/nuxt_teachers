@@ -150,8 +150,6 @@
 <script setup lang="ts">
 import { OrderDirectionEnum } from '~/elpandev/hexagonal/base/domain/filter';
 import { attendance_request, user_attendance_request, user_request } from '~/src/config/repositories';
-import { AttendanceRegister, AttendanceRegisterStatusEnum, attendance_register_status_locale, attendance_register_status_options } from '~/src/modules/attendance/domain/values/register';
-import { Student } from '~/src/modules/student/domain/model';
 import { UserFilter } from '~/src/modules/user/domain/filter';
 import { UserRoleEnum, user_role_locale, type User } from '~/src/modules/user/domain/model';
 import { UserAttendanceFilter } from '~/src/modules/user_attendance/domain/filter';

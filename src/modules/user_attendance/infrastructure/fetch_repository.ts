@@ -3,14 +3,20 @@ import { UserAttendance, type IUserAttendance } from "../domain/model";
 import type { IUserAttendanceRepository } from "../domain/repository";
 import { BaseFetchModelRepository } from "~/elpandev/hexagonal/base/infrastructure/fetch_repository";
 
-export class FetchUserAttendanceRepository extends BaseFetchModelRepository<UserAttendance, IUserAttendance> implements IUserAttendanceRepository {
+interface IUserAttendancePayload extends IUserAttendance {}
+
+export class FetchUserAttendanceRepository extends BaseFetchModelRepository<UserAttendance, IUserAttendancePayload> implements IUserAttendanceRepository {
   public reference() { return `${BACKEND_URL[ENV]}/user_attendances` }
 
-  public fromPayload(data: any): UserAttendance {
-    const model = new UserAttendance(data)
+  public fromPayload(payload: IUserAttendancePayload): UserAttendance {
+    const model = new UserAttendance(payload)
 
     model.exists = true
 
     return model
+  }
+
+  public toPayload(model: UserAttendance): Partial<IUserAttendancePayload> {
+    return model.toPayload()
   }
 }
