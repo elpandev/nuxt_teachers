@@ -111,7 +111,7 @@ export class FetchAuthRepository implements IAuthRepository {
     const data     = await response.json()
     const user     = new User(data.results[0])
 
-    user.exists
+    user.exists = true
 
     return user
   }

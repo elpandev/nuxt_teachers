@@ -1,4 +1,3 @@
-import { BaseAuthRequestRepository as ExternalBaseAuthRequestRepository } from "@/elpandev/hexagonal/base/aplication/auth_request_repository";
 import { EventAuthLogin, EventAuthLogout, EventAuthRegister, observer } from "~/src/shared/domain/observer";
 import type { IAuthRepository } from "../domain/repository";
 import type { IBaseAuthRepositoryLogin, IBaseAuthRepositoryRegister } from "~/elpandev/hexagonal/base/domain/auth_repository";

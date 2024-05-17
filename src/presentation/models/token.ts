@@ -5,6 +5,7 @@ export interface IToken {
   refresh_token: string
   token_type:    string
   expires_in:    number
+  created_at:    number
 }
 
 export class Token extends BaseModel<IToken> {
@@ -13,7 +14,7 @@ export class Token extends BaseModel<IToken> {
   public token_type:    string = ''
   public expires_in:    number = 0
 
-  public created_at: Date = new Date()
+  public created_at: number = Date.now()
 
   constructor(data?: Partial<IToken>) {
     super()
@@ -27,6 +28,7 @@ export class Token extends BaseModel<IToken> {
       if (typeof data.refresh_token == 'string')  this.refresh_token = data.refresh_token
       if (typeof data.token_type    == 'string')  this.token_type    = data.token_type
       if (typeof data.expires_in    == 'number')  this.expires_in    = data.expires_in
+      if (typeof data.created_at    == 'number')  this.created_at    = data.created_at
     }
 
     return this
@@ -38,10 +40,11 @@ export class Token extends BaseModel<IToken> {
       refresh_token: this.refresh_token,
       token_type:    this.token_type,
       expires_in:    this.expires_in,
+      created_at:    this.created_at,
     }
   }
 
   public get expired(): boolean {
-    return Date.now() >= (this.expires_in + this.created_at.getTime())
+    return Date.now() >= (this.created_at + (this.expires_in * 1000))
   }
 }
