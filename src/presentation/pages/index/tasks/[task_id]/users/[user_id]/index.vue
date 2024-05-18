@@ -75,8 +75,6 @@ const { pending } = useLazyAsyncData(async () => {
 
     <ul class="container">
       <li><b>Calficación:</b> {{ user_task.points }}</li>
-      <li><b>Preguntas Respondidas:</b> {{ user_task.points }}</li>
-      <li><b>Preguntas sin responder:</b> {{ user_task.points }}</li>
       <li><b>Estado:</b> {{ user_task.status }}</li>
       <li><b>Tiempo:</b> {{ user_task.time_expended.toFormat() }}</li>
     </ul>
@@ -96,10 +94,10 @@ const { pending } = useLazyAsyncData(async () => {
     display: grid;
     gap: 18px;
     .answer {
-      color: $color_primary;
+      color: var(--color-primary);
     }
     .comment {
-      color: $color_red;
+      color: var(--color-red);
     }
   }
 }
