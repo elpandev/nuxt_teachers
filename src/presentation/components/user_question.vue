@@ -4,17 +4,18 @@ import type { Question } from '~/src/modules/question/domain/model';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 
 interface IProps {
-  question:      Question
-  user_question: UserQuestion
+  question:       Question
+  user_question?: UserQuestion
 }
 
 const props         = defineProps<IProps>()
-const user_question = ref<UserQuestion>(props.user_question)
+const user_question = ref<UserQuestion>(props.user_question ?? new UserQuestion())
+const editable      = ref<boolean>(false)
 
-const store = useRequest(async () => {
-  await user_question_request.store(user_question.value)
-
+const { request: store } = useRequest(async () => {
   user_question.value.initial = new UserQuestion(user_question.value.toPayload())
+
+  editable.value = false
 })
 
 onMounted(() => {
@@ -23,22 +24,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="user-question">
-    <span>{{ props.question.question }}</span>
-
-    <!-- <template v-if="props.question.is_selector">
-      <ul class="options">
-        <li v-for="option in question.options" :key="option.id">
-          <input type="checkbox" :checked="user_question.options[option.id]" @change="user_question.on_option_checked(option)">
-          <span>{{ option.option }}</span>
-        </li>
-      </ul>
-    </template> -->
-
-    <template v-if="props.question.is_text">
-      <textarea v-model="user_question.answer"></textarea>
+  <article class="user-question">
+    <template v-if="user_question.exists">
+      <button v-if="editable" @click="store()">guardar</button>
+      <button v-else          @click="editable = true">editar</button>
     </template>
 
-    <button v-if="user_question.has_changed()" @click="store.request()">Guardar</button>
-  </div>
+    <header>
+      <h3>{{ $props.question.question }}</h3>
+      <p>{{ $props.question.description }}</p>
+    </header>
+    
+    <template v-if="user_question.exists">
+      <template v-if="$props.question.is_text">
+        <span class="answer">{{ user_question.answer }}</span>
+      </template>
+
+      <footer>
+        <template v-if="editable">
+          <input v-model="user_question.points" type="number">
+          <textarea v-model="user_question.comment" class="comment"></textarea>
+        </template>
+
+        <template v-else>
+          <span class="points">{{ user_question.points }}</span>
+          <span class="comment">{{ user_question.comment }}</span>
+        </template>
+      </footer>
+    </template>
+
+    <span v-else>El estudiante no ha respondido esta pregunta</span>
+  </article>
 </template>

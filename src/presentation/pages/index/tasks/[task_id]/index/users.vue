@@ -68,7 +68,7 @@ await useLazyAsyncData(async () => {
           <td>{{ user_task.points.toFixed(2) }}</td>
           <td>{{ user_task.status }}</td>
           <td class="actions">
-            <nuxt-link :to="`/tasks/${user_task.task_id}/questions?user_id=${user_task.user_id}`">ver</nuxt-link>
+            <nuxt-link :to="`/tasks/${user_task.task_id}/users/${user_task.user_id}`">ver</nuxt-link>
           </td>
         </tr>
       </tbody>
