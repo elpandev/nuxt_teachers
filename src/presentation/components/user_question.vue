@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { user_question_request } from '~/src/config/repositories';
 import type { Question } from '~/src/modules/question/domain/model';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 
