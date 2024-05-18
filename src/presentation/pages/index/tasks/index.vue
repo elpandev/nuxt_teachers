@@ -46,9 +46,9 @@ const { pending } = await useLazyAsyncData(async () => {
             <th>Activo</th>
             <th>Fecha Inicio</th>
             <th>Fecha Finalización</th>
-            <th>Pendiente</th>
-            <th>Iniciado</th>
-            <th>Completado</th>
+            <th>P</th>
+            <th>I</th>
+            <th>C</th>
             <th>Promedio</th>
           </tr>
         </thead>

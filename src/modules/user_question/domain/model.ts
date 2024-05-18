@@ -1,12 +1,13 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
+import type { Question } from "../../question/domain/model";
 
 export interface IUserQuestion extends IBaseModel {
   id:          string
   answer:      string|null
   comment:     string|null
   points:      number
-  course_id:   string
+  course_id:   string|null
   task_id:     string
   user_id:     string
   question_id: string
@@ -19,10 +20,10 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
   public comment: string|null = null
   public points:  number      = 0
 
-  public course_id:   string = ''
-  public task_id:     string = ''
-  public user_id:     string = ''
-  public question_id: string = ''
+  public course_id:   string|null = null
+  public task_id:     string      = ''
+  public user_id:     string      = ''
+  public question_id: string      = ''
 
   constructor(data?: Partial<IUserQuestion>) {
     super()
@@ -68,5 +69,13 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
       user_id:     this.user_id,
       question_id: this.question_id,
     }
+  }
+
+  public has_changed(): boolean {
+    if (this.initial === undefined) return false
+
+    return (
+      this.initial.answer != this.answer
+    )
   }
 }

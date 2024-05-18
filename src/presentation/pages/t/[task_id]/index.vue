@@ -29,6 +29,7 @@ const user_questions = ref<Map<string, UserQuestion>>(new Map())
 
 const { request: start, pending: start_pending } = useRequest(async () => {
   user_task.value = await user_task_request.get(`${user_id.value}_${task_id}`) ?? new UserTask()
+  task     .value = await task_request.get(task_id) ?? new Task()
 
   if (!user_task.value.exists) {
     return snackbar.value.error('El estudiante no ha sido registrado para este exámen')
@@ -68,7 +69,7 @@ const { request: start, pending: start_pending } = useRequest(async () => {
   page.value = PageEnum.TASK
 })
 
-const complete = useRequest(async () => {
+const { request: complete } = useRequest(async () => {
   await user_task_request.update(`${user_id.value}_${task_id}`, { status: UserTaskStatusEnum.COMPLETED })
 
   page.value = PageEnum.COMPLETED
@@ -106,7 +107,7 @@ const complete = useRequest(async () => {
       </section>
 
       <footer>
-        <button @click="complete.request()">completar</button>
+        <button @click="complete()">completar</button>
       </footer>
     </template>
 

@@ -24,4 +24,14 @@ export class QuestionFilter extends BaseFilter implements IQuestionFilter {
 
     return queries
   }
+
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    if (this.task_id?.isNotEmpty()) {
+      params.set('task_id', this.task_id)
+    }
+
+    return params
+  }
 }

@@ -11,6 +11,7 @@ const props     = defineProps<{ task_id?: string }>()
 const title     = `${ props.task_id ? 'Editar' : 'Nueva' } Tarea`
 const validator = ref<Validator>(new Validator({ payload: {}, rules: {} }))
 const snackbar  = useSnackbar()
+const router    = useRouter()
 const task      = ref<Task>(new Task())
 
 const option_enabled = computed<SelectOption<boolean>>({
@@ -29,7 +30,7 @@ const { request: store, pending: store_pending } = useRequest(async () => {
 
     snackbar.value.success('La Tarea ha sido creada')
 
-    task.value = new TaskFactory().generate()
+    router.push(`/tasks/${task.value.id}`)
   }
 
   catch (error) {

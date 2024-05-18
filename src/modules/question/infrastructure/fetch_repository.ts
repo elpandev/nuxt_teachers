@@ -3,14 +3,20 @@ import { Question, type IQuestion } from "../domain/model";
 import type { IQuestionRepository } from "../domain/repository";
 import { BaseFetchModelRepository } from "~/elpandev/hexagonal/base/infrastructure/fetch_repository";
 
-export class FetchQuestionRepository extends BaseFetchModelRepository<Question, IQuestion> implements IQuestionRepository {
+interface IQuestionPayload extends IQuestion {}
+
+export class FetchQuestionRepository extends BaseFetchModelRepository<Question, IQuestionPayload> implements IQuestionRepository {
   public reference() { return `${BACKEND_URL[ENV]}/questions` }
 
-  public fromPayload(data: any): Question {
-    const model = new Question(data)
+  public fromPayload(payload: IQuestionPayload): Question {
+    const model = new Question(payload)
 
     model.exists = true
 
     return model
+  }
+
+  public toPayload(model: Question): Partial<IQuestionPayload> {
+    return model.toPayload()
   }
 }
