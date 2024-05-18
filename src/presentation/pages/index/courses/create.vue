@@ -77,6 +77,7 @@ useSeoMeta({ title })
       <v-selector
         v-model="teacher_option"
         :request="request_teacher_options"
+        :label="'Profesor'"
       />
 
       <v-input :label="'Nombre'"      v-model="course.name" />

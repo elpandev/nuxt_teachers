@@ -3,14 +3,20 @@ import { UserTask, type IUserTask } from "../domain/model";
 import type { IUserTaskRepository } from "../domain/repository";
 import { BaseFetchModelRepository } from "~/elpandev/hexagonal/base/infrastructure/fetch_repository";
 
-export class FetchUserTaskRepository extends BaseFetchModelRepository<UserTask, IUserTask> implements IUserTaskRepository {
+interface IUserTaskPayload extends IUserTask {}
+
+export class FetchUserTaskRepository extends BaseFetchModelRepository<UserTask, IUserTaskPayload> implements IUserTaskRepository {
   public reference() { return `${BACKEND_URL[ENV]}/user_tasks` }
 
-  public fromPayload(data: any): UserTask {
-    const model = new UserTask(data)
+  public fromPayload(payload: IUserTaskPayload): UserTask {
+    const model = new UserTask(payload)
 
     model.exists = true
 
     return model
+  }
+
+  public toPayload(model: UserTask): Partial<IUserTaskPayload> {
+    return model.toPayload()
   }
 }

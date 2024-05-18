@@ -3,14 +3,20 @@ import { Task, type ITask } from "../domain/model";
 import type { ITaskRepository } from "../domain/repository";
 import { BaseFetchModelRepository } from "~/elpandev/hexagonal/base/infrastructure/fetch_repository";
 
-export class FetchTaskRepository extends BaseFetchModelRepository<Task, ITask> implements ITaskRepository {
+interface ITaskPayload extends ITask {}
+
+export class FetchTaskRepository extends BaseFetchModelRepository<Task, ITaskPayload> implements ITaskRepository {
   public reference() { return `${BACKEND_URL[ENV]}/tasks` }
 
-  public fromPayload(data: any): Task {
-    const model = new Task(data)
+  public fromPayload(payload: ITaskPayload): Task {
+    const model = new Task(payload)
 
     model.exists = true
 
     return model
+  }
+
+  public toPayload(model: Task): Partial<ITaskPayload> {
+    return model.toPayload()
   }
 }
