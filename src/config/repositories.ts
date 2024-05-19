@@ -40,6 +40,8 @@ import { FetchUserQuestionRepository } from "../modules/user_question/infrastruc
 import { UserQuestionRequestRepository } from "../modules/user_question/application/request_repository";
 import { FetchUserOptionRepository } from "../modules/user_option/infrastructure/fetch_repository";
 import { UserOptionRequestRepository } from "../modules/user_option/application/request_repository";
+import { FetchOptionRepository } from "../modules/option/infrastructure/fetch_repository";
+import { OptionRequestRepository } from "../modules/option/aplication/request_repository";
 
 export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
@@ -55,6 +57,7 @@ export const attendance_repository        = new FetchAttendanceRepository()
 export const grade_repository             = new FetchGradeRepository()
 export const task_repository              = new FetchTaskRepository()
 export const question_repository          = new FetchQuestionRepository()
+export const option_repository            = new FetchOptionRepository()
 export const schedule_repository          = new FirestoreScheduleRepository()
 export const table_repository             = new FirestoreTableRepository()
 export const event_repository             = new FirestoreEventRepository()
@@ -76,6 +79,7 @@ export const attendance_request        = new AttendanceRequestRepository(attenda
 export const grade_request             = new GradeRequestRepository(grade_repository)
 export const task_request              = new TaskRequestRepository(task_repository)
 export const question_request          = new QuestionRequestRepository(question_repository)
+export const option_request            = new OptionRequestRepository(option_repository)
 export const schedule_request          = new ScheduleRequestRepository(schedule_repository)
 export const table_request             = new TableRequestRepository(table_repository)
 export const event_request             = new EventRequestRepository(event_repository)

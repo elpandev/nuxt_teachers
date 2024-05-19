@@ -7,28 +7,21 @@ import { QuestionFilter } from '~/src/modules/question/domain/filter';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { SelectOption } from '~/src/presentation/models/select_option';
 
-const attrs          = useAttrs()
-const task           = attrs.task as Task
-const question_modal = useModal()
-const snackbar       = useSnackbar()
-const question       = ref<Question>(new Question())
-const questions      = ref<Question[]>([])
+const attrs     = useAttrs()
+const task      = attrs.task as Task
+const snackbar  = useSnackbar()
+const question  = ref<Question>(new Question())
+const questions = ref<Question[]>([])
 
-const question_type = computed<SelectOption<QuestionTypeEnum>>({
-  get() { return new SelectOption({ id: question.value.type, name: question.value.type, value: question.value.type }) },
-  set(value) { question.value.type = value.value }
-})
+const { enabled: modal_enabled, open: open_modal, close: close_modal } = useModal()
 
-const { request: store, pending: store_pending } = useRequest(async () => {
-  question.value.task_id = task.id
-
-  await question_request.store(question.value)
-
-  questions.value.push(question.value)
-  questions.value = [...questions.value]
+function on_stored(_question: Question) {
+  questions.value = [...questions.value, _question]
 
   question.value = new Question()
-})
+
+  modal_enabled.value = false
+}
 
 const { request: destroy } = useRequest(async (question: Question) => {
   await question_request.destroy(`${question.id}_${task.id}`)
@@ -52,7 +45,7 @@ const { pending } = useLazyAsyncData(nano_id(), async () => {
 <template>
   <section v-if="!pending" class="task-questions container">
     <header>
-      <button @click="question_modal.open()">agregar</button>
+      <button @click="open_modal()">agregar</button>
     </header>
     <table class="table">
       <thead>
@@ -80,33 +73,12 @@ const { pending } = useLazyAsyncData(nano_id(), async () => {
   </section>
 
   <Teleport to="#__nuxt">
-    <v-modal v-if="question_modal.enabled.value" @closed="question_modal.close()" >
-      <form @submit.prevent="store()">
-        <v-selector
-          v-model="question_type"
-          :label="'Tipo de Pregunta'"
-          :options="question_type_options"
-        />
-
-        <v-input v-model="question.question"      :label="'Pregunta'" />
-        <v-input v-model.number="question.points" :label="'Puntos'" :type="'number'" />
-
-        <section v-if="question.is_selector">
-          <header>
-            <h2>Opciones</h2>
-            <button @click="question.push_option()" class="button outline icon teal" type="button">
-              <v-icon-add />
-            </button>
-          </header>
-          <div v-for="option in question.options" :key="option.id">
-            <input   v-model="option.selected" type="checkbox" >
-            <v-input v-model="option.option"   type="text" />
-          </div>
-        </section>
-
-        <v-loader v-if="store_pending" />
-        <button v-else class="button outline text teal" type="submit">Guardar</button>
-      </form>
+    <v-modal v-if="modal_enabled" @closed="close_modal()" >
+      <v-custom-form-question
+        :task_id="task.id"
+        :question="question"
+        :on_stored="on_stored"
+      />
     </v-modal>
   </Teleport>
 </template>
