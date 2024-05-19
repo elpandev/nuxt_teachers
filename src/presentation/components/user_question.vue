@@ -1,15 +1,33 @@
 <script setup lang="ts">
+import type { Option } from '~/src/modules/option/domain/model';
 import type { Question } from '~/src/modules/question/domain/model';
+import type { UserOption } from '~/src/modules/user_option/domain/model';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 
 interface IProps {
   question:       Question
+  options:        Option[]
   user_question?: UserQuestion
+  user_options:   UserOption[]
 }
 
 const props         = defineProps<IProps>()
 const user_question = ref<UserQuestion>(props.user_question ?? new UserQuestion())
 const editable      = ref<boolean>(false)
+
+function checked(option_id: string): boolean {
+  const user_option = props.user_options.find(e => e.option_id == option_id)
+
+  return user_option ? user_option.selected : false
+}
+
+function on_checked(option_id: string) {
+  const user_option = props.user_options.find(e => e.option_id == option_id)
+
+  if (user_option) {
+    user_option.selected = !user_option.selected
+  }
+}
 
 const { request: store } = useRequest(async () => {
   user_question.value.initial = new UserQuestion(user_question.value.toPayload())
@@ -37,6 +55,15 @@ onMounted(() => {
     <template v-if="user_question.exists">
       <template v-if="$props.question.is_text">
         <span class="answer">{{ user_question.answer }}</span>
+      </template>
+
+      <template v-if="$props.question.is_selector">
+        <ul class="options">
+          <li v-for="option in $props.options" :key="option.id">
+            <input type="checkbox" :checked="checked(option.id)" @change="on_checked(option.id)">
+            <span>{{ option.option }}</span>
+          </li>
+        </ul>
       </template>
 
       <footer>

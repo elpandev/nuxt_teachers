@@ -1,6 +1,7 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import type { Question } from "../../question/domain/model";
+import type { UserOption } from "../../user_option/domain/model";
 
 export interface IUserQuestion extends IBaseModel {
   id:          string
@@ -24,6 +25,8 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
   public task_id:     string      = ''
   public user_id:     string      = ''
   public question_id: string      = ''
+
+  public user_options: UserOption[] = []
 
   constructor(data?: Partial<IUserQuestion>) {
     super()

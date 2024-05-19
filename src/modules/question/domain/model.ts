@@ -3,6 +3,7 @@ import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/mod
 import { code_id } from "~/elpandev/utils";
 import { SelectOption } from "~/src/presentation/models/select_option";
 import { Option } from "../../option/domain/model";
+import type { UserQuestion } from "../../user_question/domain/model";
 
 export interface IQuestion extends IBaseModel {
   id:          string
@@ -37,7 +38,6 @@ export class Question extends BaseModel<IQuestion> implements IQuestion {
   public description: string               = ''
   public points:      number               = 0
   public task_id:     string               = ''
-  public options:     Option[]             = []
 
   constructor(data?: Partial<IQuestion>) {
     super()

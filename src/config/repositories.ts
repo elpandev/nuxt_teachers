@@ -38,6 +38,8 @@ import { UserTaskRequestRepository } from "../modules/user_task/aplication/reque
 import { FetchQuestionRepository } from "../modules/question/infrastructure/fetch_repository";
 import { FetchUserQuestionRepository } from "../modules/user_question/infrastructure/fetch_repository";
 import { UserQuestionRequestRepository } from "../modules/user_question/application/request_repository";
+import { FetchUserOptionRepository } from "../modules/user_option/infrastructure/fetch_repository";
+import { UserOptionRequestRepository } from "../modules/user_option/application/request_repository";
 
 export const auth_repository              = new FetchAuthRepository()
 export const user_repository              = new FetchUserRepository()
@@ -48,6 +50,7 @@ export const user_course_repository       = new FetchUserCourseRepository()
 export const user_attendance_repository   = new FetchUserAttendanceRepository()
 export const user_grade_repository        = new FetchUserGradeRepository()
 export const user_question_repository     = new FetchUserQuestionRepository()
+export const user_option_repository       = new FetchUserOptionRepository()
 export const attendance_repository        = new FetchAttendanceRepository()
 export const grade_repository             = new FetchGradeRepository()
 export const task_repository              = new FetchTaskRepository()
@@ -68,6 +71,7 @@ export const user_course_request       = new UserCourseRequestRepository(user_co
 export const user_attendance_request   = new UserAttendanceRequestRepository(user_attendance_repository)
 export const user_grade_request        = new UserGradeRequestRepository(user_grade_repository)
 export const user_question_request     = new UserQuestionRequestRepository(user_question_repository)
+export const user_option_request       = new UserOptionRequestRepository(user_option_repository)
 export const attendance_request        = new AttendanceRequestRepository(attendance_repository)
 export const grade_request             = new GradeRequestRepository(grade_repository)
 export const task_request              = new TaskRequestRepository(task_repository)

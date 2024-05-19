@@ -3,6 +3,7 @@ import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/mod
 import type { ISelectOption } from "~/src/presentation/interfaces/select_option";
 import { UserRoleEnum } from "../../user/domain/model";
 import { Time } from "~/elpandev/utils";
+import type { UserQuestion } from "../../user_question/domain/model";
 
 export enum UserTaskStatusEnum {
   STARTED   = 'STARTED',
@@ -55,6 +56,8 @@ export class UserTask extends BaseModel<IUserTask> {
   public category_name: string|null        = null
   public course_id:     string|null        = null
   public course_name:   string|null        = null
+
+  public user_questions: UserQuestion[] = []
 
   constructor(data?: Partial<IUserTask>) {
     super()

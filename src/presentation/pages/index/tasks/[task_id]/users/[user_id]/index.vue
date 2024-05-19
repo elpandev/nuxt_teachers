@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { OptionFactory } from '~/src/modules/option/domain/factory';
+import type { Option } from '~/src/modules/option/domain/model';
 import { QuestionFactory } from '~/src/modules/question/domain/factory';
 import type { Question } from '~/src/modules/question/domain/model';
 import { TaskFactory } from '~/src/modules/task/domain/factory';
 import { Task } from '~/src/modules/task/domain/model';
+import { UserOptionFactory } from '~/src/modules/user_option/domain/factory';
+import type { UserOption } from '~/src/modules/user_option/domain/model';
 import { UserQuestionFactory } from '~/src/modules/user_question/domain/factory';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 import { UserTaskFactory } from '~/src/modules/user_task/domain/factory';
@@ -12,21 +16,35 @@ const task           = ref<Task>(new Task())
 const user_task      = ref<UserTask>(new UserTask())
 const questions      = ref<Question[]>([])
 const user_questions = ref<Record<string, UserQuestion>>({})
+const options        = ref<Option[]>([])
+const user_options   = ref<UserOption[]>([])
 
 async function request_task() {
   task.value = new TaskFactory().generate()
+}
+
+async function request_questions() {
+  questions.value = new QuestionFactory()
+    .generate_multiple({ length: 12 })
+}
+
+async function request_options() {
+  options.value = []
+
+  for (const question of questions.value) {
+    if (question.is_selector) {
+      options.value.push(
+        ...new OptionFactory({ task_id: task.value.id, question_id: question.id, exists: true })
+          .generate_multiple({ length: 4 })
+      )
+    }
+  }
 }
 
 async function request_user_task() {
   user_task.value = new UserTaskFactory().generate()
 
   user_task.value.exists = true
-}
-
-async function request_questions() {
-  questions.value = new QuestionFactory()
-    .generate_multiple({ length: 12 })
-    .map(e => { e.exists = true; return e })
 }
 
 async function request_user_questions() {
@@ -41,13 +59,26 @@ async function request_user_questions() {
   }
 }
 
+async function request_user_options() {
+  user_options.value = new UserOptionFactory()
+    .generate_multiple({ length: 48 })
+    .map(user_option => {
+      user_option.exists      = true
+      user_option.task_id     = task.value.id
+      user_option.question_id = questions.value.random().id
+
+
+      return user_option
+    })
+}
+
 const { pending } = useLazyAsyncData(async () => {
-  await Promise.all([
-    request_task(),
-    request_questions(),
-    request_user_task(),
-    request_user_questions(),
-  ])
+  await request_task()
+  await request_questions()
+  await request_options()
+  await request_user_task()
+  await request_user_questions()
+  await request_user_options()
 })
 </script>
 
@@ -83,7 +114,9 @@ const { pending } = useLazyAsyncData(async () => {
       :class="'container'"
       :key="question.id"
       :question="question"
+      :options="options.filter(e => e.question_id == question.id)"
       :user_question="user_questions[question.id]"
+      :user_options="user_options.filter(e => e.question_id == question.id)"
     />
   </main>
 </template>

@@ -1,6 +1,8 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import { code_id } from "~/elpandev/utils";
+import type { Question } from "../../question/domain/model";
+import type { UserTask } from "../../user_task/domain/model";
 
 export interface ITask extends IBaseModel {
   id:                   string
