@@ -11,7 +11,15 @@ export class UserTaskFilter extends BaseFilter implements IUserTaskFilter {
     super(data)
 
     if (data) {
-      if (data.task_id) { this.task_id = data.task_id }
+      if (typeof data.task_id == 'string') this.task_id = data.task_id
     }
+  }
+
+  public toParams(): URLSearchParams {
+    const params = super.toParams()
+
+    if (typeof this.task_id == 'string') params.append('task_id', this.task_id)
+
+    return params
   }
 }

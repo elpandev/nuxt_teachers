@@ -1,14 +1,17 @@
 <script setup lang="ts">
+import { user_option_request } from '~/src/config/repositories';
 import type { Option } from '~/src/modules/option/domain/model';
 import type { Question } from '~/src/modules/question/domain/model';
-import type { UserOption } from '~/src/modules/user_option/domain/model';
+import { UserOption } from '~/src/modules/user_option/domain/model';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 
 interface IProps {
-  question:       Question
-  options:        Option[]
+  user_id :       string
+  task_id :       string
+  question :      Question
+  options :       Option[]
   user_question?: UserQuestion
-  user_options:   UserOption[]
+  user_options :  UserOption[]
 }
 
 const props         = defineProps<IProps>()
@@ -21,12 +24,19 @@ function checked(option_id: string): boolean {
   return user_option ? user_option.selected : false
 }
 
-function on_checked(option_id: string) {
-  const user_option = props.user_options.find(e => e.option_id == option_id)
+async function on_checked(option_id: string) {
+  const user_option = props.user_options.find(e => e.option_id == option_id) ?? new UserOption({
+    user_id:     props.user_id,
+    task_id:     props.task_id,
+    question_id: props.question.id,
+    option_id:   option_id,
+  })
 
-  if (user_option) {
-    user_option.selected = !user_option.selected
-  }
+  user_option.selected = !user_option.selected
+
+  user_option.selected
+    ? await user_option_request.store(user_option)
+    : await user_option_request.destroy(user_option.id)
 }
 
 const { request: store } = useRequest(async () => {
@@ -52,7 +62,7 @@ onMounted(() => {
       <p>{{ $props.question.description }}</p>
     </header>
     
-    <template v-if="user_question.exists">
+    <!-- <template v-if="user_question.exists"> -->
       <template v-if="$props.question.is_text">
         <span class="answer">{{ user_question.answer }}</span>
       </template>
@@ -77,8 +87,8 @@ onMounted(() => {
           <span class="comment">{{ user_question.comment }}</span>
         </template>
       </footer>
-    </template>
+    <!-- </template> -->
 
-    <span v-else>El estudiante no ha respondido esta pregunta</span>
+    <!-- <span v-else>El estudiante no ha respondido esta pregunta</span> -->
   </article>
 </template>

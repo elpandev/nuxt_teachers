@@ -1,75 +1,48 @@
 <script setup lang="ts">
-import { OptionFactory } from '~/src/modules/option/domain/factory';
+import { option_request, question_request, task_request, user_option_request, user_question_request, user_task_request } from '~/src/config/repositories';
+import { OptionFilter } from '~/src/modules/option/domain/filter';
 import type { Option } from '~/src/modules/option/domain/model';
-import { QuestionFactory } from '~/src/modules/question/domain/factory';
+import { QuestionFilter } from '~/src/modules/question/domain/filter';
 import type { Question } from '~/src/modules/question/domain/model';
-import { TaskFactory } from '~/src/modules/task/domain/factory';
 import { Task } from '~/src/modules/task/domain/model';
-import { UserOptionFactory } from '~/src/modules/user_option/domain/factory';
+import { UserOptionFilter } from '~/src/modules/user_option/domain/filter';
 import type { UserOption } from '~/src/modules/user_option/domain/model';
-import { UserQuestionFactory } from '~/src/modules/user_question/domain/factory';
+import { UserQuestionFilter } from '~/src/modules/user_question/domain/filter';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
-import { UserTaskFactory } from '~/src/modules/user_task/domain/factory';
 import { UserTask } from '~/src/modules/user_task/domain/model';
 
+const route          = useRoute()
+const task_id        = route.params.task_id as string
+const user_id        = route.params.user_id as string
 const task           = ref<Task>(new Task())
 const user_task      = ref<UserTask>(new UserTask())
 const questions      = ref<Question[]>([])
-const user_questions = ref<Record<string, UserQuestion>>({})
+const user_questions = ref<UserQuestion[]>([])
 const options        = ref<Option[]>([])
 const user_options   = ref<UserOption[]>([])
 
 async function request_task() {
-  task.value = new TaskFactory().generate()
+  task.value = await task_request.get(task_id) ?? new Task({ id: task_id })
 }
 
 async function request_questions() {
-  questions.value = new QuestionFactory()
-    .generate_multiple({ length: 12 })
+  questions.value = await question_request.paginate(new QuestionFilter({ task_id }))
 }
 
 async function request_options() {
-  options.value = []
-
-  for (const question of questions.value) {
-    if (question.is_selector) {
-      options.value.push(
-        ...new OptionFactory({ task_id: task.value.id, question_id: question.id, exists: true })
-          .generate_multiple({ length: 4 })
-      )
-    }
-  }
+  options.value = await option_request.paginate(new OptionFilter({ task_id }))
 }
 
 async function request_user_task() {
-  user_task.value = new UserTaskFactory().generate()
-
-  user_task.value.exists = true
+  user_task.value = await user_task_request.get(`${user_id}_${task_id}`) ?? new UserTask({ user_id, task_id })
 }
 
 async function request_user_questions() {
-  for (const question of questions.value) {
-    if (Math.random() > 0.3) {
-      const user_question = new UserQuestionFactory().generate()
-
-      user_question.exists = true
-
-      user_questions.value[question.id] = user_question
-    }
-  }
+  user_questions.value = await user_question_request.paginate(new UserQuestionFilter({ task_id, user_id })) ?? []
 }
 
 async function request_user_options() {
-  user_options.value = new UserOptionFactory()
-    .generate_multiple({ length: 48 })
-    .map(user_option => {
-      user_option.exists      = true
-      user_option.task_id     = task.value.id
-      user_option.question_id = questions.value.random().id
-
-
-      return user_option
-    })
+  user_options.value = await user_option_request.paginate(new UserOptionFilter({ task_id, user_id }))
 }
 
 const { pending } = useLazyAsyncData(async () => {
@@ -113,9 +86,11 @@ const { pending } = useLazyAsyncData(async () => {
     <v-user-question v-for="question in questions"
       :class="'container'"
       :key="question.id"
+      :task_id="task_id"
+      :user_id="user_id"
       :question="question"
       :options="options.filter(e => e.question_id == question.id)"
-      :user_question="user_questions[question.id]"
+      :user_question="user_questions.find(e => e.question_id == question.id)"
       :user_options="user_options.filter(e => e.question_id == question.id)"
     />
   </main>
