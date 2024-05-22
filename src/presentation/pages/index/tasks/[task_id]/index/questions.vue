@@ -16,11 +16,21 @@ const questions = ref<Question[]>([])
 const { enabled: modal_enabled, open: open_modal, close: close_modal } = useModal()
 
 function on_stored(_question: Question) {
-  questions.value = [...questions.value, _question]
+  _question.exists
+    ? questions.value.replaceFirst(e => e.id == _question.id, _question)
+    : questions.value.push(_question)
+
+  questions.value = [...questions.value]
 
   question.value = new Question()
 
   modal_enabled.value = false
+}
+
+function edit(_question: Question) {
+  question.value = _question
+
+  open_modal()
 }
 
 const { request: destroy } = useRequest(async (question: Question) => {
@@ -63,7 +73,7 @@ const { pending } = useLazyAsyncData(nano_id(), async () => {
           <td>{{ question.points }}</td>
           <td class="actions">
             <v-popup-menu>
-              <button @click=""><v-icon-edit /> Editar</button>
+              <button @click="edit(question)"><v-icon-edit /> Editar</button>
               <button @click="destroy(question)"><v-icon-destroy /> Eliminar</button>
             </v-popup-menu>
           </td>

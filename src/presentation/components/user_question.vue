@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { user_option_request } from '~/src/config/repositories';
+import { user_question_request } from '~/src/config/repositories';
 import type { Option } from '~/src/modules/option/domain/model';
 import type { Question } from '~/src/modules/question/domain/model';
 import { UserOption } from '~/src/modules/user_option/domain/model';
@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const props         = defineProps<IProps>()
-const user_question = ref<UserQuestion>(props.user_question ?? new UserQuestion())
+const user_question = ref<UserQuestion>(new UserQuestion({ user_id: props.user_id, task_id: props.task_id, question_id: props.question.id }))
 const editable      = ref<boolean>(false)
 
 function checked(option_id: string): boolean {
@@ -24,38 +24,33 @@ function checked(option_id: string): boolean {
   return user_option ? user_option.selected : false
 }
 
-async function on_checked(option_id: string) {
-  const user_option = props.user_options.find(e => e.option_id == option_id) ?? new UserOption({
-    user_id:     props.user_id,
-    task_id:     props.task_id,
-    question_id: props.question.id,
-    option_id:   option_id,
-  })
-
-  user_option.selected = !user_option.selected
-
-  user_option.selected
-    ? await user_option_request.store(user_option)
-    : await user_option_request.destroy(user_option.id)
-}
-
 const { request: store } = useRequest(async () => {
+  user_question.value.exists
+    ? await user_question_request.update(user_question.value.id, user_question.value)
+    : await user_question_request.store (user_question.value)
+
   user_question.value.initial = new UserQuestion(user_question.value.toPayload())
 
   editable.value = false
 })
 
-onMounted(() => {
+function initialize_user_question() {
+  if (props.user_question) {
+    user_question.value = props.user_question
+  }
+
   user_question.value.initial = new UserQuestion(user_question.value.toPayload())
+}
+
+onMounted(() => {
+  initialize_user_question()
 })
 </script>
 
 <template>
-  <article class="user-question">
-    <template v-if="user_question.exists">
-      <button v-if="editable" @click="store()">guardar</button>
-      <button v-else          @click="editable = true">editar</button>
-    </template>
+  <article class="v-user-question">
+    <button v-if="editable" @click="store()">guardar</button>
+    <button v-else          @click="editable = true">editar</button>
 
     <header>
       <h3>{{ $props.question.question }}</h3>
@@ -69,8 +64,10 @@ onMounted(() => {
 
       <template v-if="$props.question.is_selector">
         <ul class="options">
-          <li v-for="option in $props.options" :key="option.id">
-            <input type="checkbox" :checked="checked(option.id)" @change="on_checked(option.id)">
+          <li class="option" v-for="option in $props.options" :key="option.id" :class="{ selected: option.selected, checked: checked(option.id) }">
+            <v-icon-done  v-if="option.selected || checked(option.id)" />
+            <v-icon-close v-else />
+
             <span>{{ option.option }}</span>
           </li>
         </ul>
@@ -83,8 +80,8 @@ onMounted(() => {
         </template>
 
         <template v-else>
-          <span class="points">{{ user_question.points }}</span>
-          <span class="comment">{{ user_question.comment }}</span>
+          <span class="points"><b>Calificación:</b> {{ user_question.points }}</span>
+          <span class="comment"><b>Comentario:</b> {{ user_question.comment }}</span>
         </template>
       </footer>
     <!-- </template> -->
@@ -92,3 +89,51 @@ onMounted(() => {
     <!-- <span v-else>El estudiante no ha respondido esta pregunta</span> -->
   </article>
 </template>
+
+<style lang="scss">
+.v-user-question {
+  display: grid;
+  gap: 21px;
+  > .options {
+    display: grid;
+    gap: 6px 12px;
+    .option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      border: 1px solid #eee;
+      padding: 12px;
+      border-radius: 12px;
+      svg {
+        opacity: 0.4;
+        &.done {
+          fill: var(--color-primary);
+        }
+        &.close {
+          fill: var(--color-red);
+        }
+      }
+      &.selected, &.checked {
+        svg {
+          &.close {
+            display: none;
+          }
+        }
+      }
+      &.selected.checked {
+        background-color: rgba(from var(--color-green) r g b / 0.04);
+        border-color: rgba(from var(--color-green) r g b / 0.24);
+        svg {
+          opacity: 1;
+          &.done {
+            fill: var(--color-green);
+          }
+        }
+      }
+    }
+  }
+  > footer {
+    display: grid;
+  }
+}
+</style>

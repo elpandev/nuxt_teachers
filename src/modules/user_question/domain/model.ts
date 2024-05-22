@@ -1,7 +1,11 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
-import type { Question } from "../../question/domain/model";
 import type { UserOption } from "../../user_option/domain/model";
+
+export const enum UserQuestionStatusEnum {
+  PENDING   = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}
 
 export interface IUserQuestion extends IBaseModel {
   id:          string
@@ -12,6 +16,7 @@ export interface IUserQuestion extends IBaseModel {
   task_id:     string
   user_id:     string
   question_id: string
+  status:      UserQuestionStatusEnum
 }
 
 export class UserQuestion extends BaseModel<IUserQuestion> {
@@ -25,6 +30,7 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
   public task_id:     string      = ''
   public user_id:     string      = ''
   public question_id: string      = ''
+  public status:      UserQuestionStatusEnum = UserQuestionStatusEnum.PENDING
 
   public user_options: UserOption[] = []
 
@@ -56,6 +62,7 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
       if (data.task_id     !== undefined) this.task_id     = data.task_id
       if (data.user_id     !== undefined) this.user_id     = data.user_id
       if (data.question_id !== undefined) this.question_id = data.question_id
+      if (data.status      !== undefined) this.status      = data.status
     }
 
     return this
@@ -71,6 +78,7 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
       task_id:     this.task_id,
       user_id:     this.user_id,
       question_id: this.question_id,
+      status:      this.status,
     }
   }
 
@@ -81,4 +89,7 @@ export class UserQuestion extends BaseModel<IUserQuestion> {
       this.initial.answer != this.answer
     )
   }
+
+  public get is_pending():   boolean { return this.status == UserQuestionStatusEnum.PENDING }
+  public get is_completed(): boolean { return this.status == UserQuestionStatusEnum.COMPLETED }
 }

@@ -26,7 +26,9 @@ const options_enabled: SelectOption<boolean>[] = [
 
 const { request: store, pending: store_pending } = useRequest(async () => {
   try {
-    await task_request.store(task.value)
+    props.task_id
+      ? await task_request.update(task.value.id, task.value)
+      : await task_request.store(task.value)
 
     snackbar.value.success('La Tarea ha sido creada')
 

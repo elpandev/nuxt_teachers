@@ -32,7 +32,9 @@ function push_option() {
 const { request: store_question } = useRequest(async () => {
   question.value.task_id = props.task_id
 
-  await question_request.store(question.value)
+  question.value.exists
+    ? await question_request.update(question.value.id, question.value)
+    : await question_request.store(question.value)
 })
 
 const { request: store_options } = useRequest(async () => {

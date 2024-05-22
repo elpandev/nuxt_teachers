@@ -1,8 +1,6 @@
 import { Validator, required, string, min } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
-import { code_id } from "~/elpandev/utils";
-import type { Question } from "../../question/domain/model";
-import type { UserTask } from "../../user_task/domain/model";
+import { Time, code_id } from "~/elpandev/utils";
 
 export interface ITask extends IBaseModel {
   id:                   string
@@ -17,7 +15,7 @@ export interface ITask extends IBaseModel {
   questions_count:      number
   questions_points_sum: number
   users_count:          number
-  users_points_sum:     number
+  users_points:         number
 }
 
 export class Task extends BaseModel<ITask> implements ITask {
@@ -33,7 +31,7 @@ export class Task extends BaseModel<ITask> implements ITask {
   public questions_count:      number      = 0
   public questions_points_sum: number      = 0
   public users_count:          number      = 0
-  public users_points_sum:     number      = 0
+  public users_points:         number      = 0
 
   constructor(data?: Partial<ITask>) {
     super()
@@ -68,7 +66,7 @@ export class Task extends BaseModel<ITask> implements ITask {
       if (data.questions_count      !== undefined) this.questions_count      = data.questions_count
       if (data.questions_points_sum !== undefined) this.questions_points_sum = data.questions_points_sum
       if (data.users_count          !== undefined) this.users_count          = data.users_count
-      if (data.users_points_sum     !== undefined) this.users_points_sum     = data.users_points_sum
+      if (data.users_points         !== undefined) this.users_points         = data.users_points
     }
 
     return this
@@ -88,8 +86,18 @@ export class Task extends BaseModel<ITask> implements ITask {
       questions_count:      this.questions_count,
       questions_points_sum: this.questions_points_sum,
       users_count:          this.users_count,
-      users_points_sum:     this.users_points_sum,
+      users_points:         this.users_points,
     }
+  }
+
+  public get time_formatted(): string|undefined {
+    if (this.start_at !== null && this.end_at !== null) {
+      return new Time()
+        .fromSeconds(this.end_at - this.start_at)
+        .toFormat()
+    }
+
+    return undefined
   }
 
   public get start_at_expired(): boolean {
@@ -103,6 +111,6 @@ export class Task extends BaseModel<ITask> implements ITask {
   public get users_points_average(): number {
     if (this.users_count <= 0) return 0
 
-    return this.users_points_sum / this.users_count
+    return this.users_points / this.users_count
   }
 }

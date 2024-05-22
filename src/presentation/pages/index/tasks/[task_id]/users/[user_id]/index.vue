@@ -62,7 +62,7 @@ const { pending } = useLazyAsyncData(async () => {
     </template>
   </v-custom-header-primary>
 
-  <main class="document user-task">
+  <main v-if="!pending" class="document user-task">
     <div class="buttons">
       <div>
         <button class="button share"><v-icon-link /> Compartir</button>
