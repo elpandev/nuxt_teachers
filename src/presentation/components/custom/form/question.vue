@@ -7,7 +7,6 @@ import type { SelectOption } from '~/src/presentation/models/select_option';
 interface IProps {
   task_id: string
   question: Question
-  options: Option[]
   on_stored: (question: Question) => void
 }
 
@@ -16,9 +15,8 @@ const type_option =  computed<SelectOption<QuestionTypeEnum>>({
   set(value) { question.value.type = value.value }
 })
 
-const props    = withDefaults(defineProps<IProps>(), { question: () => new Question(), options: () => [] })
+const props    = withDefaults(defineProps<IProps>(), { question: () => new Question() })
 const question = ref<Question>(props.question)
-const options  = ref<Option[]>(props.options)
 
 function push_option() {
   const option = new Option({
@@ -26,7 +24,7 @@ function push_option() {
     question_id: question.value.id,
   })
 
-  options.value = [...options.value, option]
+  question.value.options = [...question.value.options, option]
 }
 
 const { request: store_question } = useRequest(async () => {
@@ -39,7 +37,11 @@ const { request: store_question } = useRequest(async () => {
 
 const { request: store_options } = useRequest(async () => {
   await Promise.all(
-    options.value.map(option => option_request.store(option))
+    question.value.options.map(option => {
+      return option.exists
+        ? option_request.update(option.id, option)
+        : option_request.store (option)
+    })
   )
 })
 
@@ -70,7 +72,7 @@ const { request: store, pending: store_pending } = useRequest(async () => {
           <v-icon-add />
         </button>
       </header>
-      <div v-for="option in options" :key="option.id">
+      <div v-for="option in question.options" :key="option.id">
         <input v-model="option.selected" type="checkbox" >
         <input v-model="option.option"   type="text" />
       </div>

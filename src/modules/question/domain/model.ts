@@ -32,12 +32,13 @@ export const question_type_options: SelectOption<QuestionTypeEnum>[] = Object.va
   .map(value => new SelectOption({ id: value, name: question_type_locale(value), value }))
 
 export class Question extends BaseModel<IQuestion> implements IQuestion {
-  public id:          string               = code_id('T4gWkQn73fhuryNcHFa1vpICeKPl9BMjz2dDXsxOYGA6R5LVU8mtEwqSobZi0J')
+  public id:          string           = code_id('T4gWkQn73fhuryNcHFa1vpICeKPl9BMjz2dDXsxOYGA6R5LVU8mtEwqSobZi0J')
   public type:        QuestionTypeEnum = QuestionTypeEnum.TEXT
-  public question:    string               = ''
-  public description: string               = ''
-  public points:      number               = 0
-  public task_id:     string               = ''
+  public question:    string           = ''
+  public description: string           = ''
+  public points:      number           = 0
+  public task_id:     string           = ''
+  public options:     Option[]         = []
 
   constructor(data?: Partial<IQuestion>) {
     super()

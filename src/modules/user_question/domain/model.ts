@@ -22,17 +22,15 @@ export interface IUserQuestion extends IBaseModel {
 export class UserQuestion extends BaseModel<IUserQuestion> {
   public get id(): string { return `${this.user_id}_${this.question_id}` }
 
-  public answer:  string|null = null
-  public comment: string|null = null
-  public points:  number      = 0
-
-  public course_id:   string|null = null
-  public task_id:     string      = ''
-  public user_id:     string      = ''
-  public question_id: string      = ''
-  public status:      UserQuestionStatusEnum = UserQuestionStatusEnum.PENDING
-
-  public user_options: UserOption[] = []
+  public answer:       string|null            = null
+  public comment:      string|null            = null
+  public points:       number                 = 0
+  public course_id:    string|null            = null
+  public task_id:      string                 = ''
+  public user_id:      string                 = ''
+  public question_id:  string                 = ''
+  public status:       UserQuestionStatusEnum = UserQuestionStatusEnum.PENDING
+  public user_options: UserOption[]           = []
 
   constructor(data?: Partial<IUserQuestion>) {
     super()

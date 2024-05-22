@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { question_request } from '~/src/config/repositories';
+import { option_request, question_request } from '~/src/config/repositories';
 import type { Task } from '~/src/modules/task/domain/model';
 import { nano_id } from '~/elpandev/utils';
 import { Question, QuestionTypeEnum, question_type_options } from '~/src/modules/question/domain/model';
 import { QuestionFilter } from '~/src/modules/question/domain/filter';
 import { useSnackbar } from '~/src/presentation/states/snackbar';
 import { SelectOption } from '~/src/presentation/models/select_option';
+import type { Option } from '~/src/modules/option/domain/model';
+import { OptionFilter } from '~/src/modules/option/domain/filter';
 
 const attrs     = useAttrs()
 const task      = attrs.task as Task
 const snackbar  = useSnackbar()
 const question  = ref<Question>(new Question())
 const questions = ref<Question[]>([])
+const options   = ref<Option[]>([])
 
 const { enabled: modal_enabled, open: open_modal, close: close_modal } = useModal()
 
@@ -42,13 +45,26 @@ const { request: destroy } = useRequest(async (question: Question) => {
   snackbar.value.success('La pregunta ha sido eliminada')
 })
 
-const { request: request_questions } = useRequest(async () => {
+async function request_questions() {
   questions.value = await question_request
     .paginate(new QuestionFilter({ task_id: task.id }))
-})
+}
+
+async function request_options() {
+  options.value = await option_request
+    .paginate(new OptionFilter({ task_id: task.id }))
+}
+
+function organize_questions() {
+  for (const question of questions.value) {
+    question.options = options.value.filter(e => e.question_id == question.id)
+  }
+}
 
 const { pending } = useLazyAsyncData(nano_id(), async () => {
-  await request_questions()
+  await Promise.all([ request_questions(), request_options() ])
+
+  organize_questions()
 })
 </script>
 

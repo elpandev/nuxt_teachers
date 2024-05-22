@@ -1,6 +1,7 @@
 import { Validator } from "@/elpandev/validator";
 import { BaseModel, type IBaseModel } from "~/elpandev/hexagonal/base/domain/model";
 import { code_id } from "~/elpandev/utils";
+import type { UserOption } from "../../user_option/domain/model";
 
 export interface IOption extends IBaseModel {
   id:          string
@@ -16,6 +17,8 @@ export class Option extends BaseModel<IOption> {
   public selected:    boolean = false
   public task_id:     string  = ''
   public question_id: string  = ''
+
+  public user_options: UserOption[] = []
 
   constructor(data?: Partial<IOption>) {
     super()
