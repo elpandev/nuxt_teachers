@@ -44,7 +44,7 @@ export class UserOption extends BaseModel<IUserOption> {
       if (data.option_id   !== undefined) this.option_id   = data.option_id
       if (data.task_id     !== undefined) this.task_id     = data.task_id
       if (data.question_id !== undefined) this.question_id = data.question_id
-      if (data.selected    !== undefined) this.selected    = data.selected
+      if (data.selected    !== undefined) this.selected    = Boolean(data.selected)
     }
 
     return this

@@ -45,13 +45,30 @@ async function request_user_options() {
   user_options.value = await user_option_request.paginate(new UserOptionFilter({ task_id, user_id }))
 }
 
+function organize_questions() {
+  for (const question of questions.value) {
+    question.options = options.value.filter(e => e.question_id == question.id)
+  }
+}
+
+function organize_user_questions() {
+  for (const user_question of user_questions.value) {
+    user_question.user_options = user_options.value.filter(e => e.question_id == user_question.question_id)
+  }
+}
+
 const { pending } = useLazyAsyncData(async () => {
-  await request_task()
-  await request_questions()
-  await request_options()
-  await request_user_task()
-  await request_user_questions()
-  await request_user_options()
+  await Promise.all([
+    request_task(),
+    request_questions(),
+    request_options(),
+    request_user_task(),
+    request_user_questions(),
+    request_user_options(),
+  ])
+
+  organize_questions()
+  organize_user_questions()
 })
 </script>
 
@@ -89,9 +106,7 @@ const { pending } = useLazyAsyncData(async () => {
       :task_id="task_id"
       :user_id="user_id"
       :question="question"
-      :options="options.filter(e => e.question_id == question.id)"
       :user_question="user_questions.find(e => e.question_id == question.id)"
-      :user_options="user_options.filter(e => e.question_id == question.id)"
     />
   </main>
 </template>

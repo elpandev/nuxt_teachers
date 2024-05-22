@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { user_question_request } from '~/src/config/repositories';
-import type { Option } from '~/src/modules/option/domain/model';
 import type { Question } from '~/src/modules/question/domain/model';
-import { UserOption } from '~/src/modules/user_option/domain/model';
 import { UserQuestion } from '~/src/modules/user_question/domain/model';
 
 interface IProps {
   user_id :       string
   task_id :       string
   question :      Question
-  options :       Option[]
   user_question?: UserQuestion
-  user_options :  UserOption[]
 }
 
 const props         = defineProps<IProps>()
@@ -19,7 +15,7 @@ const user_question = ref<UserQuestion>(new UserQuestion({ user_id: props.user_i
 const editable      = ref<boolean>(false)
 
 function checked(option_id: string): boolean {
-  const user_option = props.user_options.find(e => e.option_id == option_id)
+  const user_option = user_question.value.user_options.find(e => e.option_id == option_id)
 
   return user_option ? user_option.selected : false
 }
@@ -29,8 +25,6 @@ const { request: store } = useRequest(async () => {
     ? await user_question_request.update(user_question.value.id, user_question.value)
     : await user_question_request.store (user_question.value)
 
-  user_question.value.initial = new UserQuestion(user_question.value.toPayload())
-
   editable.value = false
 })
 
@@ -38,8 +32,6 @@ function initialize_user_question() {
   if (props.user_question) {
     user_question.value = props.user_question
   }
-
-  user_question.value.initial = new UserQuestion(user_question.value.toPayload())
 }
 
 onMounted(() => {
@@ -64,8 +56,8 @@ onMounted(() => {
 
       <template v-if="$props.question.is_selector">
         <ul class="options">
-          <li class="option" v-for="option in $props.options" :key="option.id" :class="{ selected: option.selected, checked: checked(option.id) }">
-            <v-icon-done  v-if="option.selected || checked(option.id)" />
+          <li class="option" v-for="option in $props.question.options" :key="option.id" :class="{ selected: option.selected, checked: checked(option.id) }">
+            <v-icon-done  v-if="option.selected || (option.selected && checked(option.id))" />
             <v-icon-close v-else />
 
             <span>{{ option.option }}</span>
@@ -113,11 +105,11 @@ onMounted(() => {
           fill: var(--color-red);
         }
       }
-      &.selected, &.checked {
+      &.checked {
+        background-color: rgba(from var(--color-red) r g b / 0.04);
+        border-color: rgba(from var(--color-red) r g b / 0.24);
         svg {
-          &.close {
-            display: none;
-          }
+          opacity: 1;
         }
       }
       &.selected.checked {
