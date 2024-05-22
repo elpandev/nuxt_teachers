@@ -80,7 +80,7 @@ onMounted(() => {
         </template>
 
         <template v-else>
-          <span class="points"><b>Calificación:</b> {{ user_question.points }}</span>
+          <span class="points"><b>Calificación:</b> {{ user_question.points }}/{{ question.points }}</span>
           <span class="comment"><b>Comentario:</b> {{ user_question.comment }}</span>
         </template>
       </footer>

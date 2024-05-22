@@ -7,6 +7,7 @@ export interface ITask extends IBaseModel {
   name:                 string
   description:          string
   enabled:              boolean
+  points:               number
   start_at:             number|null
   end_at:               number|null
   pending_count:        number
@@ -23,6 +24,7 @@ export class Task extends BaseModel<ITask> implements ITask {
   public name:                 string      = '';
   public description:          string      = '';
   public enabled:              boolean     = true;
+  public points:               number      = 0
   public start_at:             number|null = null;
   public end_at:               number|null = null;
   public pending_count:        number      = 0
@@ -58,6 +60,7 @@ export class Task extends BaseModel<ITask> implements ITask {
       if (data.name                 !== undefined) this.name                 = data.name
       if (data.description          !== undefined) this.description          = data.description
       if (data.enabled              !== undefined) this.enabled              = data.enabled
+      if (data.points               !== undefined) this.points               = data.points
       if (data.start_at             !== undefined) this.start_at             = data.start_at
       if (data.end_at               !== undefined) this.end_at               = data.end_at
       if (data.pending_count        !== undefined) this.pending_count        = data.pending_count
@@ -78,6 +81,7 @@ export class Task extends BaseModel<ITask> implements ITask {
       name:                 this.name,
       description:          this.description,
       enabled:              this.enabled,
+      points:               this.points,
       start_at:             this.start_at,
       end_at:               this.end_at,
       pending_count:        this.pending_count,

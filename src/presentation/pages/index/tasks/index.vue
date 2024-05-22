@@ -61,7 +61,7 @@ const { pending } = await useLazyAsyncData(async () => {
             <td>{{ task.pending_count }}</td>
             <td>{{ task.started_count }}</td>
             <td>{{ task.completed_count }}</td>
-            <td>{{ task.users_points_average.toFixed(2) }}</td>
+            <td>{{ task.users_points_average.toFixed(2) }}/{{ task.points }}</td>
             <td class="actions">
               <v-popup-menu>
                 <nuxt-link :to="`/tasks/${task.id}/users`"><v-icon-visibility /> Ver</nuxt-link>
