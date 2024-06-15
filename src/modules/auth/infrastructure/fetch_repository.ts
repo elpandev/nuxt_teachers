@@ -3,9 +3,10 @@ import { Validator, min, required, string } from "~/elpandev/validator";
 import { Token } from "~/src/presentation/models/token";
 import type { IAuthRepository } from "../domain/repository";
 import { User } from "../../user/domain/model";
+import { BACKEND_URL, ENV } from "~/src/config/env";
 
 export class FetchAuthRepository implements IAuthRepository {
-  public reference() { return 'http://127.0.0.1:8787' }
+  public reference() { return `${BACKEND_URL[ENV]}` }
 
   public login_validate(data: IBaseAuthRepositoryLogin) {
     const validator =  new Validator({

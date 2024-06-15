@@ -3,7 +3,7 @@ export const enum EnvEnum {
   PROD = 'PROD',
 }
 
-export const ENV = EnvEnum.DEV
+export const ENV = EnvEnum.PROD
 
 export const BACKEND_URL: Record<EnvEnum, String> = {
   [EnvEnum.DEV]:  'http://127.0.0.1:8787',
